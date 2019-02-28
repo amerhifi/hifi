@@ -2,7 +2,7 @@
 // Libraries
 //
 
-include ':oculus'
+include ':oculus', ':focusInterface'
 project(':oculus').projectDir = new File(settingsDir, 'libraries/oculus')
 
 include ':qt'
