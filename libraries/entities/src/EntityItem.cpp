@@ -49,7 +49,8 @@ int EntityItem::_maxActionsDataSize = 800;
 quint64 EntityItem::_rememberDeletedActionTime = 20 * USECS_PER_SECOND;
 QString EntityItem::_marketplacePublicKey;
 
-std::function<glm::quat(const glm::vec3&, const glm::quat&, BillboardMode)> EntityItem::_getBillboardRotationOperator = [](const glm::vec3&, const glm::quat& rotation, BillboardMode) { return rotation; };
+std::function<glm::quat(const glm::vec3&, const glm::quat&, BillboardMode, const glm::vec3&)> EntityItem::_getBillboardRotationOperator = [](const glm::vec3&, const glm::quat& rotation, BillboardMode, const glm::vec3&) { return rotation; };
+std::function<glm::vec3()> EntityItem::_getPrimaryViewFrustumPositionOperator = []() { return glm::vec3(0.0f); };
 
 EntityItem::EntityItem(const EntityItemID& entityItemID) :
     SpatiallyNestable(NestableType::Entity, entityItemID)
@@ -78,6 +79,8 @@ EntityPropertyFlags EntityItem::getEntityProperties(EncodeBitstreamParams& param
 
     // Core
     requestedProperties += PROP_SIMULATION_OWNER;
+    requestedProperties += PROP_PARENT_ID;
+    requestedProperties += PROP_PARENT_JOINT_INDEX;
     requestedProperties += PROP_VISIBLE;
     requestedProperties += PROP_NAME;
     requestedProperties += PROP_LOCKED;
@@ -92,8 +95,6 @@ EntityPropertyFlags EntityItem::getEntityProperties(EncodeBitstreamParams& param
     requestedProperties += PROP_LAST_EDITED_BY;
     requestedProperties += PROP_ENTITY_HOST_TYPE;
     requestedProperties += PROP_OWNING_AVATAR_ID;
-    requestedProperties += PROP_PARENT_ID;
-    requestedProperties += PROP_PARENT_JOINT_INDEX;
     requestedProperties += PROP_QUERY_AA_CUBE;
     requestedProperties += PROP_CAN_CAST_SHADOW;
     requestedProperties += PROP_VISIBLE_IN_SECONDARY_CAMERA;
@@ -259,20 +260,6 @@ OctreeElement::AppendState EntityItem::appendEntityData(OctreePacketData* packet
         //      PROP_CUSTOM_PROPERTIES_INCLUDED,
 
         APPEND_ENTITY_PROPERTY(PROP_SIMULATION_OWNER, _simulationOwner.toByteArray());
-        APPEND_ENTITY_PROPERTY(PROP_VISIBLE, getVisible());
-        APPEND_ENTITY_PROPERTY(PROP_NAME, getName());
-        APPEND_ENTITY_PROPERTY(PROP_LOCKED, getLocked());
-        APPEND_ENTITY_PROPERTY(PROP_USER_DATA, getUserData());
-        APPEND_ENTITY_PROPERTY(PROP_HREF, getHref());
-        APPEND_ENTITY_PROPERTY(PROP_DESCRIPTION, getDescription());
-        APPEND_ENTITY_PROPERTY(PROP_POSITION, getLocalPosition());
-        APPEND_ENTITY_PROPERTY(PROP_DIMENSIONS, getUnscaledDimensions());
-        APPEND_ENTITY_PROPERTY(PROP_ROTATION, getLocalOrientation());
-        APPEND_ENTITY_PROPERTY(PROP_REGISTRATION_POINT, getRegistrationPoint());
-        APPEND_ENTITY_PROPERTY(PROP_CREATED, getCreated());
-        APPEND_ENTITY_PROPERTY(PROP_LAST_EDITED_BY, getLastEditedBy());
-        // APPEND_ENTITY_PROPERTY(PROP_ENTITY_HOST_TYPE, (uint32_t)getEntityHostType());  // not sent over the wire
-        // APPEND_ENTITY_PROPERTY(PROP_OWNING_AVATAR_ID, getOwningAvatarID());            // not sent over the wire
         // convert AVATAR_SELF_ID to actual sessionUUID.
         QUuid actualParentID = getParentID();
         if (actualParentID == AVATAR_SELF_ID) {
@@ -281,6 +268,20 @@ OctreeElement::AppendState EntityItem::appendEntityData(OctreePacketData* packet
         }
         APPEND_ENTITY_PROPERTY(PROP_PARENT_ID, actualParentID);
         APPEND_ENTITY_PROPERTY(PROP_PARENT_JOINT_INDEX, getParentJointIndex());
+        APPEND_ENTITY_PROPERTY(PROP_VISIBLE, getVisible());
+        APPEND_ENTITY_PROPERTY(PROP_NAME, getName());
+        APPEND_ENTITY_PROPERTY(PROP_LOCKED, getLocked());
+        APPEND_ENTITY_PROPERTY(PROP_USER_DATA, getUserData());
+        APPEND_ENTITY_PROPERTY(PROP_HREF, getHref());
+        APPEND_ENTITY_PROPERTY(PROP_DESCRIPTION, getDescription());
+        APPEND_ENTITY_PROPERTY(PROP_POSITION, getLocalPosition());
+        APPEND_ENTITY_PROPERTY(PROP_DIMENSIONS, getScaledDimensions());
+        APPEND_ENTITY_PROPERTY(PROP_ROTATION, getLocalOrientation());
+        APPEND_ENTITY_PROPERTY(PROP_REGISTRATION_POINT, getRegistrationPoint());
+        APPEND_ENTITY_PROPERTY(PROP_CREATED, getCreated());
+        APPEND_ENTITY_PROPERTY(PROP_LAST_EDITED_BY, getLastEditedBy());
+        // APPEND_ENTITY_PROPERTY(PROP_ENTITY_HOST_TYPE, (uint32_t)getEntityHostType());  // not sent over the wire
+        // APPEND_ENTITY_PROPERTY(PROP_OWNING_AVATAR_ID, getOwningAvatarID());            // not sent over the wire
         APPEND_ENTITY_PROPERTY(PROP_QUERY_AA_CUBE, getQueryAACube());
         APPEND_ENTITY_PROPERTY(PROP_CAN_CAST_SHADOW, getCanCastShadow());
         // APPEND_ENTITY_PROPERTY(PROP_VISIBLE_IN_SECONDARY_CAMERA, getIsVisibleInSecondaryCamera()); // not sent over the wire
@@ -791,6 +792,13 @@ int EntityItem::readEntityDataFromBuffer(const unsigned char* data, int bytesLef
 
     // Core
     // PROP_SIMULATION_OWNER handled above
+    {   // parentID and parentJointIndex are protected by simulation ownership
+        bool oldOverwrite = overwriteLocalData;
+        overwriteLocalData = overwriteLocalData && !weOwnSimulation;
+        READ_ENTITY_PROPERTY(PROP_PARENT_ID, QUuid, setParentID);
+        READ_ENTITY_PROPERTY(PROP_PARENT_JOINT_INDEX, quint16, setParentJointIndex);
+        overwriteLocalData = oldOverwrite;
+    }
     READ_ENTITY_PROPERTY(PROP_VISIBLE, bool, setVisible);
     READ_ENTITY_PROPERTY(PROP_NAME, QString, setName);
     READ_ENTITY_PROPERTY(PROP_LOCKED, bool, setLocked);
@@ -818,7 +826,7 @@ int EntityItem::readEntityDataFromBuffer(const unsigned char* data, int bytesLef
         };
         READ_ENTITY_PROPERTY(PROP_POSITION, glm::vec3, customUpdatePositionFromNetwork);
     }
-    READ_ENTITY_PROPERTY(PROP_DIMENSIONS, glm::vec3, setUnscaledDimensions);
+    READ_ENTITY_PROPERTY(PROP_DIMENSIONS, glm::vec3, setScaledDimensions);
     {   // See comment above
         auto customUpdateRotationFromNetwork = [this, shouldUpdate, lastEdited](glm::quat value) {
             if (shouldUpdate(_lastUpdatedRotationTimestamp, value != _lastUpdatedRotationValue)) {
@@ -834,13 +842,6 @@ int EntityItem::readEntityDataFromBuffer(const unsigned char* data, int bytesLef
     READ_ENTITY_PROPERTY(PROP_LAST_EDITED_BY, QUuid, setLastEditedBy);
     // READ_ENTITY_PROPERTY(PROP_ENTITY_HOST_TYPE, entity::HostType, setEntityHostType); // not sent over the wire
     // READ_ENTITY_PROPERTY(PROP_OWNING_AVATAR_ID, QUuuid, setOwningAvatarID);           // not sent over the wire
-    {   // parentID and parentJointIndex are protected by simulation ownership
-        bool oldOverwrite = overwriteLocalData;
-        overwriteLocalData = overwriteLocalData && !weOwnSimulation;
-        READ_ENTITY_PROPERTY(PROP_PARENT_ID, QUuid, setParentID);
-        READ_ENTITY_PROPERTY(PROP_PARENT_JOINT_INDEX, quint16, setParentJointIndex);
-        overwriteLocalData = oldOverwrite;
-    }
     {   // See comment above
         auto customUpdateQueryAACubeFromNetwork = [this, shouldUpdate, lastEdited](AACube value) {
             if (shouldUpdate(_lastUpdatedQueryAACubeTimestamp, value != _lastUpdatedQueryAACubeValue)) {
@@ -1308,6 +1309,8 @@ EntityItemProperties EntityItem::getProperties(const EntityPropertyFlags& desire
 
     // Core
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(simulationOwner, getSimulationOwner);
+    COPY_ENTITY_PROPERTY_TO_PROPERTIES(parentID, getParentID);
+    COPY_ENTITY_PROPERTY_TO_PROPERTIES(parentJointIndex, getParentJointIndex);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(visible, getVisible);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(name, getName);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(locked, getLocked);
@@ -1315,15 +1318,13 @@ EntityItemProperties EntityItem::getProperties(const EntityPropertyFlags& desire
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(href, getHref);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(description, getDescription);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(position, getLocalPosition);
-    COPY_ENTITY_PROPERTY_TO_PROPERTIES(dimensions, getUnscaledDimensions);
+    COPY_ENTITY_PROPERTY_TO_PROPERTIES(dimensions, getScaledDimensions);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(rotation, getLocalOrientation);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(registrationPoint, getRegistrationPoint);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(created, getCreated);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(lastEditedBy, getLastEditedBy);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(entityHostType, getEntityHostType);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(owningAvatarID, getOwningAvatarID);
-    COPY_ENTITY_PROPERTY_TO_PROPERTIES(parentID, getParentID);
-    COPY_ENTITY_PROPERTY_TO_PROPERTIES(parentJointIndex, getParentJointIndex);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(queryAACube, getQueryAACube);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(canCastShadow, getCanCastShadow);
     COPY_ENTITY_PROPERTY_TO_PROPERTIES(isVisibleInSecondaryCamera, isVisibleInSecondaryCamera);
@@ -1455,6 +1456,8 @@ bool EntityItem::setProperties(const EntityItemProperties& properties) {
 
     // Core
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(simulationOwner, setSimulationOwner);
+    SET_ENTITY_PROPERTY_FROM_PROPERTIES(parentID, setParentID);
+    SET_ENTITY_PROPERTY_FROM_PROPERTIES(parentJointIndex, setParentJointIndex);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(visible, setVisible);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(name, setName);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(locked, setLocked);
@@ -1462,15 +1465,13 @@ bool EntityItem::setProperties(const EntityItemProperties& properties) {
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(href, setHref);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(description, setDescription);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(position, setPosition);
-    SET_ENTITY_PROPERTY_FROM_PROPERTIES(dimensions, setUnscaledDimensions);
+    SET_ENTITY_PROPERTY_FROM_PROPERTIES(dimensions, setScaledDimensions);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(rotation, setRotation);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(registrationPoint, setRegistrationPoint);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(created, setCreated);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(lastEditedBy, setLastEditedBy);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(entityHostType, setEntityHostType);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(owningAvatarID, setOwningAvatarID);
-    SET_ENTITY_PROPERTY_FROM_PROPERTIES(parentID, setParentID);
-    SET_ENTITY_PROPERTY_FROM_PROPERTIES(parentJointIndex, setParentJointIndex);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(queryAACube, setQueryAACube);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(canCastShadow, setCanCastShadow);
     SET_ENTITY_PROPERTY_FROM_PROPERTIES(isVisibleInSecondaryCamera, setIsVisibleInSecondaryCamera);
@@ -1872,7 +1873,7 @@ glm::vec3 EntityItem::getScaledDimensions() const {
 
 void EntityItem::setScaledDimensions(const glm::vec3& value) {
     glm::vec3 parentScale = getSNScale();
-    setUnscaledDimensions(value * parentScale);
+    setUnscaledDimensions(value / parentScale);
 }
 
 void EntityItem::setUnscaledDimensions(const glm::vec3& value) {

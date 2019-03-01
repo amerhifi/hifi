@@ -2302,30 +2302,30 @@ Application::Application(int& argc, char** argv, QElapsedTimer& startupTimer, bo
         DependencyManager::get<PickManager>()->setPrecisionPicking(rayPickID, value);
     });
 
-    EntityItem::setBillboardRotationOperator([this](const glm::vec3& position, const glm::quat& rotation, BillboardMode billboardMode) {
+    EntityItem::setBillboardRotationOperator([this](const glm::vec3& position, const glm::quat& rotation, BillboardMode billboardMode, const glm::vec3& frustumPos) {
         if (billboardMode == BillboardMode::YAW) {
             //rotate about vertical to face the camera
-            ViewFrustum frustum;
-            copyViewFrustum(frustum);
-            glm::vec3 dPosition = frustum.getPosition() - position;
+            glm::vec3 dPosition = frustumPos - position;
             // If x and z are 0, atan(x, z) is undefined, so default to 0 degrees
             float yawRotation = dPosition.x == 0.0f && dPosition.z == 0.0f ? 0.0f : glm::atan(dPosition.x, dPosition.z);
             return glm::quat(glm::vec3(0.0f, yawRotation, 0.0f));
         } else if (billboardMode == BillboardMode::FULL) {
-            ViewFrustum frustum;
-            copyViewFrustum(frustum);
-            glm::vec3 cameraPos = frustum.getPosition();
             // use the referencial from the avatar, y isn't always up
             glm::vec3 avatarUP = DependencyManager::get<AvatarManager>()->getMyAvatar()->getWorldOrientation() * Vectors::UP;
             // check to see if glm::lookAt will work / using glm::lookAt variable name
-            glm::highp_vec3 s(glm::cross(position - cameraPos, avatarUP));
+            glm::highp_vec3 s(glm::cross(position - frustumPos, avatarUP));
 
             // make sure s is not NaN for any component
             if (glm::length2(s) > 0.0f) {
-                return glm::conjugate(glm::toQuat(glm::lookAt(cameraPos, position, avatarUP)));
+                return glm::conjugate(glm::toQuat(glm::lookAt(frustumPos, position, avatarUP)));
             }
         }
         return rotation;
+    });
+    EntityItem::setPrimaryViewFrustumPositionOperator([this]() {
+        ViewFrustum viewFrustum;
+        copyViewFrustum(viewFrustum);
+        return viewFrustum.getPosition();
     });
 
     render::entities::WebEntityRenderer::setAcquireWebSurfaceOperator([this](const QString& url, bool htmlContent, QSharedPointer<OffscreenQmlSurface>& webSurface, bool& cachedWebSurface) {
@@ -2413,15 +2413,9 @@ Application::Application(int& argc, char** argv, QElapsedTimer& startupTimer, bo
     connect(&AndroidHelper::instance(), &AndroidHelper::enterBackground, this, &Application::enterBackground);
     connect(&AndroidHelper::instance(), &AndroidHelper::enterForeground, this, &Application::enterForeground);
     connect(&AndroidHelper::instance(), &AndroidHelper::toggleAwayMode, this, &Application::toggleAwayMode);
-
     AndroidHelper::instance().notifyLoadComplete();
 #endif
     pauseUntilLoginDetermined();
-
-#if defined(Q_OS_ANDROID)
-    const QString QUEST_DEV = "hifi://quest-dev";
-    DependencyManager::get<AddressManager>()->handleLookupString(QUEST_DEV);
-#endif
 }
 
 void Application::updateVerboseLogging() {
@@ -3781,9 +3775,12 @@ std::map<QString, QString> Application::prepareServerlessDomainContents(QUrl dom
         tmpTree->reaverageOctreeElements();
         tmpTree->sendEntities(&_entityEditSender, getEntities()->getTree(), 0, 0, 0);
     }
+    std::map<QString, QString> namedPaths = tmpTree->getNamedPaths();
 
-    return tmpTree->getNamedPaths();
+    // we must manually eraseAllOctreeElements(false) else the tmpTree will mem-leak
+    tmpTree->eraseAllOctreeElements(false);
 
+    return namedPaths;
 }
 
 void Application::loadServerlessDomain(QUrl domainURL) {
@@ -4988,6 +4985,15 @@ void Application::idle() {
     }
 
     {
+        if (_keyboardFocusWaitingOnRenderable && getEntities()->renderableForEntityId(_keyboardFocusedEntity.get())) {
+            _keyboardFocusWaitingOnRenderable = false;
+            QUuid entityId = _keyboardFocusedEntity.get();
+            setKeyboardFocusEntity(UNKNOWN_ENTITY_ID);
+            setKeyboardFocusEntity(entityId);
+        }
+    }
+
+    {
         PerformanceTimer perfTimer("pluginIdle");
         PerformanceWarning warn(showWarnings, "Application::idle()... pluginIdle()");
         getActiveDisplayPlugin()->idle();
@@ -5769,6 +5775,11 @@ void Application::reloadResourceCaches() {
 
     DependencyManager::get<NodeList>()->reset();  // Force redownload of .fst models
 
+    DependencyManager::get<ScriptEngines>()->reloadAllScripts();
+    getOffscreenUI()->clearCache();
+
+    DependencyManager::get<Keyboard>()->createKeyboard();
+
     getMyAvatar()->resetFullAvatarURL();
 }
 
@@ -5815,7 +5826,7 @@ void Application::setKeyboardFocusEntity(const QUuid& id) {
         if (qApp->getLoginDialogPoppedUp() && !_loginDialogID.isNull()) {
             if (id == _loginDialogID) {
                 emit loginDialogFocusEnabled();
-            } else {
+            } else if (!_keyboardFocusWaitingOnRenderable) {
                 // that's the only entity we want in focus;
                 return;
             }
@@ -5832,7 +5843,10 @@ void Application::setKeyboardFocusEntity(const QUuid& id) {
             if (properties.getVisible()) {
                 auto entities = getEntities();
                 auto entityId = _keyboardFocusedEntity.get();
-                if (entities->wantsKeyboardFocus(entityId)) {
+                auto entityItemRenderable = entities->renderableForEntityId(entityId);
+                if (!entityItemRenderable) {
+                    _keyboardFocusWaitingOnRenderable = true;
+                } else if (entityItemRenderable->wantsKeyboardFocus()) {
                     entities->setProxyWindow(entityId, _window->windowHandle());
                     if (_keyboardMouseDevice->isActive()) {
                         _keyboardMouseDevice->pluginFocusOutEvent();
