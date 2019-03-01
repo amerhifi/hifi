@@ -3,10 +3,15 @@ package io.highfidelity.focusInterface;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class Interface extends Activity {
+import org.qtproject.qt5.android.bindings.QtActivity;
+
+public class Interface extends QtActivity{
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        
     }
 }

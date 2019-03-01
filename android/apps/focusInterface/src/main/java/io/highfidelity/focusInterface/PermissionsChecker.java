@@ -9,4 +9,6 @@ public class PermissionsChecker extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
+
+
 }

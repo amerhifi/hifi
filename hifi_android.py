@@ -59,6 +59,13 @@ ANDROID_PACKAGES = {
         'sharedLibFolder': 'Android/libs/arm64-v8a',
         'includeLibs': ['libovrplatformloader.so']
     },
+    #'htcwvr': {
+    #    'file': 'wvr.zip',
+    #    'versionId': 'TODO',
+    #    'checksum': 'TODO',
+    #    'sharedLibFolder': 'Android/libs/armeabo-v7a',
+    #    'includeLibs': ['libsvrapi.so']
+    #},
     'openssl': {
         'file': 'openssl-1.1.0g_armv8.tgz',
         'versionId': 'AiiPjmgUZTgNj7YV1EEx2lL47aDvvvAW',
