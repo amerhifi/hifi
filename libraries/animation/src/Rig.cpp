@@ -1079,6 +1079,7 @@ void Rig::computeMotionAnimationState(float deltaTime, const glm::vec3& worldPos
             _animVars.set("rightFootPoleVectorEnabled", false);
         }
         _lastEnableInverseKinematics = _enableInverseKinematics;
+
     }
     _lastForward = forward;
     _lastPosition = worldPosition;
@@ -1878,15 +1879,13 @@ void Rig::updateFromControllerParameters(const ControllerParameters& params, flo
     };
 
     std::shared_ptr<AnimInverseKinematics> ikNode = getAnimInverseKinematicsNode();
-    if (ikNode) {
-        for (int i = 0; i < (int)NumSecondaryControllerTypes; i++) {
-            int index = indexOfJoint(secondaryControllerJointNames[i]);
-            if (index >= 0) {
-                if (params.secondaryControllerFlags[i] & (uint8_t)ControllerFlags::Enabled) {
-                    ikNode->setSecondaryTargetInRigFrame(index, params.secondaryControllerPoses[i]);
-                } else {
-                    ikNode->clearSecondaryTarget(index);
-                }
+    for (int i = 0; i < (int)NumSecondaryControllerTypes; i++) {
+        int index = indexOfJoint(secondaryControllerJointNames[i]);
+        if ((index >= 0) && (ikNode)) {
+            if (params.secondaryControllerFlags[i] & (uint8_t)ControllerFlags::Enabled) {
+                ikNode->setSecondaryTargetInRigFrame(index, params.secondaryControllerPoses[i]);
+            } else {
+                ikNode->clearSecondaryTarget(index);
             }
         }
     }
