@@ -3,7 +3,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT "${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-  message( FATAL_ERROR "Only 64 bit builds supported." )
+  message( "WARNING: This buildis not 64-bit supported." )
 endif()
 
 if (USE_CCACHE OR "$ENV{USE_CCACHE}")
