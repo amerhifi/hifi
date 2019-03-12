@@ -3,7 +3,9 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT "${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
-  message( "WARNING: This buildis not 64-bit supported." )
+	if(NOT(ANDROID))
+		message( FATAL "build is not 64-bit supported." )
+	endif()
 endif()
 
 if (USE_CCACHE OR "$ENV{USE_CCACHE}")
