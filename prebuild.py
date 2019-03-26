@@ -88,6 +88,7 @@ def parse_args():
     from argparse import ArgumentParser
     parser = ArgumentParser(description='Prepare build dependencies.')
     parser.add_argument('--android', type=str)
+    parser.add_argument('--abi', type=str, default='arm64-v8a', help='armeabi-v7a, arm64-v8a')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--force-bootstrap', action='store_true')
     parser.add_argument('--force-build', action='store_true')
@@ -134,7 +135,7 @@ def main():
         #  * build host tools, like spirv-cross and scribe
         #  * build client dependencies like openssl and nvtt
         with timer('Setting up dependencies'):
-            pm.setupDependencies()
+            pm.setupDependencies(args.abi)
 
         # wipe out the build directories (after writing the tag, since failure 
         # here shouldn't invalidte the vcpkg install)
@@ -147,10 +148,10 @@ def main():
             # Find the target location
             appPath = hifi_utils.scriptRelative('android/apps/' + args.android)
             # Copy the non-Qt libraries specified in the config in hifi_android.py
-            hifi_android.copyAndroidLibs(pm.androidPackagePath, appPath)
+            hifi_android.copyAndroidLibs(pm.androidPackagePath, appPath, args.abi)
             # Determine the Qt package path
             qtPath = os.path.join(pm.androidPackagePath, 'qt')
-            hifi_android.QtPackager(appPath, qtPath).bundle()
+            hifi_android.QtPackager(appPath, qtPath,args.abi).bundle()
 
         # Write the vcpkg config to the build directory last
         with timer('Writing configuration'):

@@ -11,6 +11,7 @@ import zipfile
 print = functools.partial(print, flush=True)
 
 ANDROID_PACKAGE_URL = 'https://hifi-public.s3.amazonaws.com/dependencies/android/'
+ANDROID_PACKAGE_URL32 = 'https://androidbin.blob.core.windows.net/android32bin/'
 
 ANDROID_PACKAGES = {
     'qt' : {
@@ -59,13 +60,6 @@ ANDROID_PACKAGES = {
         'sharedLibFolder': 'Android/libs/arm64-v8a',
         'includeLibs': ['libovrplatformloader.so']
     },
-    #'htcwvr': {
-    #    'file': 'wvr.zip',
-    #    'versionId': 'TODO',
-    #    'checksum': 'TODO',
-    #    'sharedLibFolder': 'Android/libs/armeabo-v7a',
-    #    'includeLibs': ['libsvrapi.so']
-    #},
     'openssl': {
         'file': 'openssl-1.1.0g_armv8.tgz',
         'versionId': 'AiiPjmgUZTgNj7YV1EEx2lL47aDvvvAW',
@@ -99,6 +93,77 @@ ANDROID_PACKAGES = {
         'file': 'breakpad.tgz',
         'versionId': '8VrYXz7oyc.QBxNia0BVJOUBvrFO61jI',
         'checksum': 'ddcb23df336b08017042ba4786db1d9e',
+        'sharedLibFolder': 'lib',
+        'includeLibs': {'libbreakpad_client.a'}
+    }
+}
+ANDROID_PACKAGES32 = {
+    'qt' : {
+        'file': 'qt-5.11.1_linux_armv7.zip',
+        'versionId': '',
+        'checksum': '',
+    },
+    'bullet': {
+        'file': 'bullet-2.88_armv7-libcpp.zip',
+        'versionId': '',
+        'checksum': '',
+    },            
+    'draco': {
+        'file': 'draco_armv7-libcpp.zip',
+        'versionId': '',
+        'checksum': '',
+    },
+    'glad': {
+        'file': 'glad_armv7-libcpp.zip',
+        'versionId': '',
+        'checksum': '',
+    },
+    'nvtt': {
+        'file': 'nvtt_armv7-libcpp.zip',
+        'versionId': '',
+        'checksum': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': ['libnvtt.so']
+    },
+    #'htcwvr': {
+    #    'file': 'wvr.zip',
+    #    'versionId': 'TODO',
+    #    'checksum': 'TODO',
+    #    'sharedLibFolder': 'Android/libs/armeabo-v7a',
+    #    'includeLibs': ['libsvrapi.so']
+    #},
+    'openssl': {
+        'file': 'openssl-1.1.0g_armv7.zip',
+        'versionId': '',
+        'checksum': ''
+    },
+    'polyvox': {
+        'file': 'polyvox_armv7-libcpp.zip',
+        'versionId': '',
+        'checksum': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': ['Release/libPolyVoxCore.so', 'libPolyVoxUtil.so'],
+    },
+    'tbb': {
+        'file': 'tbb-2018_U1_armv7_libcpp.zip',
+        'versionId': '',
+        'checksum': '',
+        'sharedLibFolder': 'lib/release',
+        'includeLibs': ['libtbb.so', 'libtbbmalloc.so'],
+    },
+    'hifiAC': {
+        'file': 'codecSDK-android_armv7-2.0.zip',
+        'checksum': ''
+    },
+    'etc2comp': {
+        'file': 'etc2comp-armv7-libcpp.zip',
+        'versionId': '',
+        'checksum': ''
+    },
+    'breakpad': {
+        'file': 'breakpad.zip',
+        'versionId': '',
+        'checksum': '',
         'sharedLibFolder': 'lib',
         'includeLibs': {'libbreakpad_client.a'}
     }
@@ -144,8 +209,15 @@ QT5_DEPS = [
     'Qt5WebView',
 ]
 
-def getPlatformPackages():
-    result = ANDROID_PACKAGES.copy()
+def getPlatformPackages(abi):
+    
+    if abi == 'armeabi-v7a':
+        print("********* 32 bit ************")
+        result=ANDROID_PACKAGES32.copy()
+    else:
+        print("********* 64 bit ************")
+        result = ANDROID_PACKAGES.copy()
+    
     system = platform.system()
     if system in ANDROID_PLATFORM_PACKAGES:
         platformPackages = ANDROID_PLATFORM_PACKAGES[system]
@@ -161,9 +233,10 @@ def getPackageUrl(package):
         url += '?versionId=' + package['versionId']
     return url
 
-def copyAndroidLibs(packagePath, appPath):
-    androidPackages = getPlatformPackages()
-    jniPath = os.path.join(appPath, 'src/main/jniLibs/arm64-v8a')
+def copyAndroidLibs(packagePath, appPath, abi):
+    androidPackages = getPlatformPackages(abi)
+    jniPath = os.path.join(appPath, 'src/main/jniLibs/'+abi)
+            
     if not os.path.isdir(jniPath):
         os.makedirs(jniPath)
     for packageName in androidPackages:
@@ -204,10 +277,10 @@ def copyAndroidLibs(packagePath, appPath):
         shutil.copy(baseSoOut, baseSoOut2)
 
 class QtPackager:
-    def __init__(self, appPath, qtRootPath):
+    def __init__(self, appPath, qtRootPath,abi):
         self.appPath = appPath
         self.qtRootPath = qtRootPath
-        self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/arm64-v8a')
+        self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/'+abi)
         self.assetPath = os.path.join(self.appPath, 'src/main/assets')
         self.qtAssetPath = os.path.join(self.assetPath, '--Added-by-androiddeployqt--')
         self.qtAssetCacheList = os.path.join(self.qtAssetPath, 'qt_cache_pregenerated_file_list')

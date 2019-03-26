@@ -9,12 +9,19 @@ endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/macros/TargetPython.cmake")
 target_python()
-
-if (HIFI_ANDROID )
+set(CMAKE_VERBOSE_MAKEFILE ON)
+if (HIFI_ANDROID)
+  if(HIFI_32BIT)
+    execute_process(
+           COMMAND ${HIFI_PYTHON_EXEC} ${CMAKE_CURRENT_SOURCE_DIR}/prebuild.py --android ${HIFI_ANDROID_APP} --abi armeabi-v7a --build-root ${CMAKE_BINARY_DIR}
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      )
+  else()
     execute_process(
         COMMAND ${HIFI_PYTHON_EXEC} ${CMAKE_CURRENT_SOURCE_DIR}/prebuild.py --android ${HIFI_ANDROID_APP} --build-root ${CMAKE_BINARY_DIR}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
+  endif()
 else()
     execute_process(
         COMMAND ${HIFI_PYTHON_EXEC} ${CMAKE_CURRENT_SOURCE_DIR}/prebuild.py --build-root ${CMAKE_BINARY_DIR}

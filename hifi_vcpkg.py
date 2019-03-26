@@ -157,12 +157,12 @@ endif()
         print(actualCommands)
         hifi_utils.executeSubprocess(actualCommands, folder=self.path)
 
-    def setupDependencies(self):
+    def setupDependencies(self, hifi32bit):
         # Special case for android, grab a bunch of binaries
         # FIXME remove special casing for android builds eventually
         if self.args.android:
             print("Installing Android binaries")
-            self.setupAndroidDependencies()
+            self.setupAndroidDependencies(hifi32bit)
 
         print("Installing host tools")
         self.run(['install', '--triplet', self.hostTriplet, 'hifi-host-tools'])
@@ -179,9 +179,9 @@ endif()
             print("Wiping build trees")
             shutil.rmtree(builddir, ignore_errors=True)
 
-    def setupAndroidDependencies(self):
+    def setupAndroidDependencies(self, abi):
         # vcpkg prebuilt
-        if not os.path.isdir(os.path.join(self.path, 'installed', 'arm64-android')):
+        if not os.path.isdir(os.path.join(self.path, 'installed', abi )):
             dest = os.path.join(self.path, 'installed')
             url = "https://hifi-public.s3.amazonaws.com/dependencies/vcpkg/vcpkg-arm64-android.tar.gz"
             # FIXME I don't know why the hash check frequently fails here.  If you examine the file later it has the right hash
@@ -190,7 +190,7 @@ endif()
             hifi_utils.downloadAndExtract(url, dest)
 
         print("Installing additional android archives")
-        androidPackages = hifi_android.getPlatformPackages()
+        androidPackages = hifi_android.getPlatformPackages(abi)
         for packageName in androidPackages:
             package = androidPackages[packageName]
             dest = os.path.join(self.androidPackagePath, packageName)
