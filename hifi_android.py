@@ -210,6 +210,7 @@ QT5_DEPS = [
 ]
 
 def getPlatformPackages(abi):
+
     
     if abi == 'armeabi-v7a':
         print("********* 32 bit ************")
@@ -218,14 +219,19 @@ def getPlatformPackages(abi):
         print("********* 64 bit ************")
         result = ANDROID_PACKAGES.copy()
     
+
     system = platform.system()
     if system in ANDROID_PLATFORM_PACKAGES:
         platformPackages = ANDROID_PLATFORM_PACKAGES[system]
         result = { **result, **platformPackages }
     return result
 
-def getPackageUrl(package):
-    url = ANDROID_PACKAGE_URL
+def getPackageUrl(package, abi):
+    if abi == 'armeabi-v7a':
+        url = ANDROID_PACKAGE_URL32
+    else:
+        url = ANDROID_PACKAGE_URL
+    
     if 'baseUrl' in package:
         url = package['baseUrl']
     url += package['file']

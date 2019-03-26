@@ -196,7 +196,7 @@ endif()
             dest = os.path.join(self.androidPackagePath, packageName)
             if os.path.isdir(dest):
                 continue
-            url = hifi_android.getPackageUrl(package)
+            url = hifi_android.getPackageUrl(package, abi)
             zipFile = package['file'].endswith('.zip')
             print("Android archive {}".format(package['file']))
             hifi_utils.downloadAndExtract(url, dest, isZip=zipFile, hash=package['checksum'], hasher=hashlib.md5())

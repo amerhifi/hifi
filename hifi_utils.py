@@ -88,6 +88,8 @@ def hashFolder(folder):
     return hashFiles(filenames)
 
 def downloadFile(url, hash=None, hasher=hashlib.sha512(), retries=3):
+    print("******* URL: {}".format(url))
+
     for i in range(retries):
         tempFileName = None
         # OSX Python doesn't support SSL, so we need to bypass it.  
@@ -99,7 +101,11 @@ def downloadFile(url, hash=None, hasher=hashlib.sha512(), retries=3):
                 shutil.copyfileobj(response, tempFile)
         else:
             tempFileName, headers = urllib.request.urlretrieve(url)
-
+        
+        if hash=="":
+            print("*******expected empty hash")
+        return tempFileName
+        
         downloadHash = hashFile(tempFileName, hasher)
         # Verify the hash
         if hash is not None and hash != downloadHash:
@@ -112,7 +118,9 @@ def downloadFile(url, hash=None, hasher=hashlib.sha512(), retries=3):
 
 
 def downloadAndExtract(url, destPath, hash=None, hasher=hashlib.sha512(), isZip=False):
+    print("***** DESTINATION PATH {0}".format(destPath))
     tempFileName = downloadFile(url, hash, hasher)
+    print("***** TEMP FILE NAME {0}".format(tempFileName))
     if isZip:
         with zipfile.ZipFile(tempFileName) as zip:
             zip.extractall(destPath)
