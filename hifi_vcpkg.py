@@ -157,12 +157,12 @@ endif()
         print(actualCommands)
         hifi_utils.executeSubprocess(actualCommands, folder=self.path)
 
-    def setupDependencies(self, hifi32bit):
+    def setupDependencies(self, abi):
         # Special case for android, grab a bunch of binaries
         # FIXME remove special casing for android builds eventually
         if self.args.android:
             print("Installing Android binaries")
-            self.setupAndroidDependencies(hifi32bit)
+            self.setupAndroidDependencies(abi)
 
         print("Installing host tools")
         self.run(['install', '--triplet', self.hostTriplet, 'hifi-host-tools'])

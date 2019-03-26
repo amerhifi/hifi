@@ -169,17 +169,34 @@ ANDROID_PACKAGES32 = {
     }
 }
 
+ANDROID_PLATFORM_PACKAGES32={
+'Darwin' : {
+        'qt': {
+            'file': 'qt-5.11.1_osx_armv8-libcpp_openssl_patched.tgz',
+            'versionId': '',
+            'checksum': ''
+        },
+    },
+    'Windows' : {
+        'qt': {
+            'file': 'qt-5.11.1_win_armv7-libcpp_openssl_patched.tgz',
+            'versionId': '',
+            'checksum': ''
+        },
+    }
+
+} 
 ANDROID_PLATFORM_PACKAGES = {
     'Darwin' : {
         'qt': {
-            'file': 'qt-5.11.1_osx_armv8-libcpp_openssl_patched.tgz',
+            'file': 'qt-5.11.1_osx_armv8-libcpp_openssl_patched.zip',
             'versionId': 'OxBD7iKINv1HbyOXmAmDrBb8AF3N.Kup',
             'checksum': 'c83cc477c08a892e00c71764dca051a0'
         },
     },
     'Windows' : {
         'qt': {
-            'file': 'qt-5.11.1_win_armv8-libcpp_openssl_patched.tgz',
+            'file': 'qt-5.11.1_win_armv8-libcpp_openssl_patched.zip',
             'versionId': 'JfWM0P_Mz5Qp0LwpzhrsRwN3fqlLSFeT',
             'checksum': '0582191cc55431aa4f660848a542883e'
         },
@@ -211,18 +228,17 @@ QT5_DEPS = [
 
 def getPlatformPackages(abi):
 
-    
+    app = ANDROID_PLATFORM_PACKAGES
+    result = ANDROID_PACKAGES.copy()
+    system = platform.system()
+
     if abi == 'armeabi-v7a':
         print("********* 32 bit ************")
         result=ANDROID_PACKAGES32.copy()
-    else:
-        print("********* 64 bit ************")
-        result = ANDROID_PACKAGES.copy()
-    
-
-    system = platform.system()
-    if system in ANDROID_PLATFORM_PACKAGES:
-        platformPackages = ANDROID_PLATFORM_PACKAGES[system]
+        app= ANDROID_PLATFORM_PACKAGES32[system]
+         
+    if system in app:
+        platformPackages = app[system]
         result = { **result, **platformPackages }
     return result
 
@@ -241,7 +257,7 @@ def getPackageUrl(package, abi):
 
 def copyAndroidLibs(packagePath, appPath, abi):
     androidPackages = getPlatformPackages(abi)
-    jniPath = os.path.join(appPath, 'src/main/jniLibs/'+abi)
+    jniPath = os.path.join(appPath, 'src/main/jniLibs/'+abi+'/')
             
     if not os.path.isdir(jniPath):
         os.makedirs(jniPath)
@@ -255,38 +271,41 @@ def copyAndroidLibs(packagePath, appPath, abi):
                     destFile = os.path.join(jniPath, os.path.split(lib)[1])
                     if not os.path.isfile(destFile):
                         print("Copying {}".format(lib))
+                        print("******source {}, dest {} ".format(sourceFile, destFile))
                         shutil.copy(sourceFile, destFile)
 
-    gvrLibFolder = os.path.join(packagePath, 'gvr/gvr-android-sdk-1.101.0/libraries')
-    audioSoOut = os.path.join(gvrLibFolder, 'libgvr_audio.so')
-    if not os.path.isfile(audioSoOut):
-        audioAar = os.path.join(gvrLibFolder, 'sdk-audio-1.101.0.aar')
-        with zipfile.ZipFile(audioAar) as z:
-            with z.open('jni/arm64-v8a/libgvr_audio.so') as f:
-                with open(audioSoOut, 'wb') as of:
-                    shutil.copyfileobj(f, of)
+    #not needed for 32 bit
+    if abi == 'arm64-v8a':
+        gvrLibFolder = os.path.join(packagePath, 'gvr/gvr-android-sdk-1.101.0/libraries')
+        audioSoOut = os.path.join(gvrLibFolder, 'libgvr_audio.so')
+        if not os.path.isfile(audioSoOut):
+            audioAar = os.path.join(gvrLibFolder, 'sdk-audio-1.101.0.aar')
+            with zipfile.ZipFile(audioAar) as z:
+                with z.open('jni/arm64-v8a/libgvr_audio.so') as f:
+                    with open(audioSoOut, 'wb') as of:
+                        shutil.copyfileobj(f, of)
 
-    audioSoOut2 = os.path.join(jniPath, 'libgvr_audio.so')
-    if not os.path.isfile(audioSoOut2):
-        shutil.copy(audioSoOut, audioSoOut2)
+        audioSoOut2 = os.path.join(jniPath, 'libgvr_audio.so')
+        if not os.path.isfile(audioSoOut2):
+            shutil.copy(audioSoOut, audioSoOut2)
 
-    baseSoOut = os.path.join(gvrLibFolder, 'libgvr.so')
-    if not os.path.isfile(baseSoOut):
-        baseAar = os.path.join(gvrLibFolder, 'sdk-base-1.101.0.aar')
-        with zipfile.ZipFile(baseAar) as z:
-            with z.open('jni/arm64-v8a/libgvr.so') as f:
-                with open(baseSoOut, 'wb') as of:
-                    shutil.copyfileobj(f, of)
+        baseSoOut = os.path.join(gvrLibFolder, 'libgvr.so')
+        if not os.path.isfile(baseSoOut):
+            baseAar = os.path.join(gvrLibFolder, 'sdk-base-1.101.0.aar')
+            with zipfile.ZipFile(baseAar) as z:
+                with z.open('jni/arm64-v8a/libgvr.so') as f:
+                    with open(baseSoOut, 'wb') as of:
+                        shutil.copyfileobj(f, of)
 
-    baseSoOut2 = os.path.join(jniPath, 'libgvr.so')
-    if not os.path.isfile(baseSoOut2):
-        shutil.copy(baseSoOut, baseSoOut2)
+        baseSoOut2 = os.path.join(jniPath, 'libgvr.so')
+        if not os.path.isfile(baseSoOut2):
+            shutil.copy(baseSoOut, baseSoOut2)
 
 class QtPackager:
     def __init__(self, appPath, qtRootPath,abi):
         self.appPath = appPath
         self.qtRootPath = qtRootPath
-        self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/'+abi)
+        self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/'+abi+'/')
         self.assetPath = os.path.join(self.appPath, 'src/main/assets')
         self.qtAssetPath = os.path.join(self.assetPath, '--Added-by-androiddeployqt--')
         self.qtAssetCacheList = os.path.join(self.qtAssetPath, 'qt_cache_pregenerated_file_list')
