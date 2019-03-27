@@ -104,7 +104,7 @@ ANDROID_PACKAGES32 = {
         'checksum': '',
     },
     'bullet': {
-        'file': 'bullet3_armv7-libcpp.zip',
+        'file': 'bullet-2.88_armv7-libcpp.zip',
         'versionId': '',
         'checksum': '',
     },            
