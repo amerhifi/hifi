@@ -20,7 +20,7 @@ ANDROID_PACKAGES = {
         'checksum': 'aa449d4bfa963f3bc9a9dfe558ba29df',
     },
     'bullet': {
-        'file': 'bullet-2.88_armv8-libcpp.tgz',
+        'file': 'bullet3_armv7-libcpp.zip',
         'versionId': 'S8YaoED0Cl8sSb8fSV7Q2G1lQJSNDxqg',
         'checksum': '81642779ccb110f8c7338e8739ac38a0',
     },            
@@ -104,7 +104,7 @@ ANDROID_PACKAGES32 = {
         'checksum': '',
     },
     'bullet': {
-        'file': 'bullet-2.88_armv7-libcpp.zip',
+        'file': 'bullet3_armv7-libcpp.zip',
         'versionId': '',
         'checksum': '',
     },            
@@ -142,7 +142,7 @@ ANDROID_PACKAGES32 = {
         'versionId': '',
         'checksum': '',
         'sharedLibFolder': 'lib',
-        'includeLibs': ['Release/libPolyVoxCore.so', 'libPolyVoxUtil.so'],
+        #'includeLibs': ['Release/libPolyVoxCore.so', 'libPolyVoxUtil.so'],
     },
     'tbb': {
         'file': 'tbb-2018_U1_armv7_libcpp.zip',
