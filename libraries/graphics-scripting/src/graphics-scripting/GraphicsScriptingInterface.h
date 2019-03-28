@@ -107,8 +107,11 @@ namespace scriptable {
     QScriptValue scriptableMaterialToScriptValue(QScriptEngine* engine, const scriptable::ScriptableMaterial &material);
 };
 
+#if (QT_POINTER_SIZE == 8)
 Q_DECLARE_METATYPE(glm::uint32)
 Q_DECLARE_METATYPE(QVector<glm::uint32>)
+#endif
+
 Q_DECLARE_METATYPE(NestableType)
 
 #endif // hifi_GraphicsScriptingInterface_h
