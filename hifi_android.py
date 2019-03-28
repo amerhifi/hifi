@@ -142,7 +142,7 @@ ANDROID_PACKAGES32 = {
         'versionId': '',
         'checksum': '',
         'sharedLibFolder': 'lib',
-        #'includeLibs': ['Release/libPolyVoxCore.so', 'libPolyVoxUtil.so'],
+        'includeLibs': ['Release/libPolyVoxCore.so', 'libPolyVoxUtil.so'],
     },
     'tbb': {
         'file': 'tbb-2018_U1_armv7_libcpp.zip',
