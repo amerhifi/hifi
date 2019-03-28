@@ -45,7 +45,7 @@
             android:launchMode="singleTask">
             <meta-data
                 android:name="android.app.lib_name"
-                android:value="questInterface" />
+                android:value="focusInterface" />
             <meta-data
                 android:name="android.app.qt_libs_resource_id"
                 android:resource="@array/qt_libs" />

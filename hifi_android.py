@@ -303,9 +303,11 @@ def copyAndroidLibs(packagePath, appPath, abi):
 
 class QtPackager:
     def __init__(self, appPath, qtRootPath,abi):
+        print("********* QtPackager Init ************")
         self.appPath = appPath
         self.qtRootPath = qtRootPath
-        self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/'+abi+'/')
+        self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/'+abi)
+        print('********** src/main/jniLibs/'+abi)
         self.assetPath = os.path.join(self.appPath, 'src/main/assets')
         self.qtAssetPath = os.path.join(self.assetPath, '--Added-by-androiddeployqt--')
         self.qtAssetCacheList = os.path.join(self.qtAssetPath, 'qt_cache_pregenerated_file_list')
@@ -317,6 +319,7 @@ class QtPackager:
         self.permissions = []
 
     def copyQtDeps(self):
+        print('********** CopyQtDeps *********')
         for lib in QT5_DEPS:
             libfile = os.path.join(self.qtRootPath, "lib/lib{}.so".format(lib))
             if not os.path.exists(libfile):
@@ -343,6 +346,7 @@ class QtPackager:
                     self.features.append(item.attrib['name'])
 
     def scanQmlImports(self):
+        print('********** scanQmlImports *********')
         qmlImportCommandFile = os.path.join(self.qtRootPath, 'bin/qmlimportscanner')
         system = platform.system()
         if 'Windows' == system:
@@ -372,6 +376,7 @@ class QtPackager:
             self.files.extend(hifi_utils.recursiveFileList(path, excludeNamePattern=r"^\."))
 
     def processFiles(self):
+        print('********** scanQmlImports *********')
         self.files = list(set(self.files))
         self.files.sort()
         libsXmlRoot = ET.Element('resources')
@@ -447,6 +452,7 @@ class QtPackager:
         # }
 
     def bundle(self):
+        print('********** bundle *********')
         if not os.path.isfile(self.xmlFile):
             print("Bundling Qt info into {}".format(self.xmlFile))
             self.copyQtDeps()
