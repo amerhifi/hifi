@@ -18,6 +18,7 @@
 #include <PerfStat.h>
 #include <PhysicsCollisionGroups.h>
 #include <Profile.h>
+#include <LinearMath/btQuickprof.cpp>
 #include <BulletCollision/CollisionShapes/btTriangleShape.h>
 
 #include "CharacterController.h"
