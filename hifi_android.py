@@ -106,17 +106,23 @@ ANDROID_PACKAGES32 = {
     'bullet': {
         'file': 'bullet-2.88_armv7-libcpp.zip',
         'versionId': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': ['libBullet.a'],
         'checksum': '',
     },            
     'draco': {
         'file': 'draco_armv7-libcpp.zip',
         'versionId': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': ['libdraco.a', 'libdracodec.a','libdracoenc.a'],
         'checksum': '',
     },
     'glad': {
         'file': 'glad_armv7-libcpp.zip',
         'versionId': '',
-        'checksum': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': ['libglad.a', 'libglad_d.a'],
+        'checksum': ''
     },
     'nvtt': {
         'file': 'nvtt_armv7-libcpp.zip',
@@ -135,6 +141,8 @@ ANDROID_PACKAGES32 = {
     'openssl': {
         'file': 'openssl-1.1.0g_armv7.zip',
         'versionId': '',
+        'sharedLibFolder': 'lib',
+         'includeLibs': ['libssl.a', 'libcrypto.a'],
         'checksum': ''
     },
     'polyvox': {
@@ -153,12 +161,18 @@ ANDROID_PACKAGES32 = {
     },
     'hifiAC': {
         'file': 'codecSDK-android_armv7-2.0.zip',
-        'checksum': ''
+        'checksum': '',
+        'sharedLibFolder': 'codecSDK',
+        'includeLibs': {'Release/libaudio.a'},
+       
     },
     'etc2comp': {
         'file': 'etc2comp-armv7-libcpp.zip',
         'versionId': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': {'libEtcLib.a'},
         'checksum': ''
+
     },
     'breakpad': {
         'file': 'breakpad.zip',

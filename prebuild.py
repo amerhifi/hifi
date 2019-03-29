@@ -99,7 +99,7 @@ def parse_args():
     if True:
         args = parser.parse_args()
     else:
-        args = parser.parse_args(['--android', 'questInterface', '--build-root', 'C:/git/hifi/android/apps/questInterface/.externalNativeBuild/cmake/debug/arm64-v8a'])
+        args = parser.parse_args(['--android', 'focusInterface','--abi', 'armeabi-v7a','--build-root', 'C:/src/hifi/android/apps/focusInterface/.externalNativeBuild/cmake/debug/armeabi-v7a'])
     return args
 
 def main():

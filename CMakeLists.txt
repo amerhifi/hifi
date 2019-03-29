@@ -92,7 +92,8 @@ if (ANDROID)
   if (
       (${HIFI_ANDROID_APP} STREQUAL "questInterface") OR 
       (${HIFI_ANDROID_APP} STREQUAL "questFramePlayer") OR
-      (${HIFI_ANDROID_APP} STREQUAL "framePlayer") 
+      (${HIFI_ANDROID_APP} STREQUAL "framePlayer") OR
+      (${HIFI_ANDROID_APP} STREQUAL "focusInterface") 
     )
     # We know the quest hardware has this extension, so we can force the use of instanced stereo
     add_definitions(-DHAVE_EXT_clip_cull_distance)
@@ -106,7 +107,10 @@ if (ANDROID)
     # `DisplayPluginList getDisplayPlugins()` and `InputPluginList getInputPlugins()`
     add_definitions(-DCUSTOM_INPUT_PLUGINS) 
     add_definitions(-DCUSTOM_DISPLAY_PLUGINS) 
-    set(PLATFORM_PLUGIN_LIBRARIES oculusMobile oculusMobilePlugin)
+    
+    if( NOT ${HIFI_ANDROID_APP} STREQUAL "focusInterface")
+      set(PLATFORM_PLUGIN_LIBRARIES oculusMobile oculusMobilePlugin)
+    endif()
   endif()
 
   # Allow client code to use preprocessor macros to distinguish between quest and non-quest builds
