@@ -34,11 +34,11 @@ ANDROID_PACKAGES = {
         'versionId': 'r5Zran.JSCtvrrB6Q4KaqfIoALPw3lYY',
         'checksum': 'a8ee8584cf1ccd34766c7ddd9d5e5449',
     },
-    'gvr': {
-        'file': 'gvrsdk_v1.101.0.tgz',
-        'versionId': 'nqBV_j81Uc31rC7bKIrlya_Hah4v3y5r',
-        'checksum': '57fd02baa069176ba18597a29b6b4fc7',
-    },
+   ## 'gvr': {
+   #     'file': 'gvrsdk_v1.101.0.tgz',
+   #     'versionId': 'nqBV_j81Uc31rC7bKIrlya_Hah4v3y5r',
+   #     'checksum': '57fd02baa069176ba18597a29b6b4fc7',
+   # },
     'nvtt': {
         'file': 'nvtt_armv8-libcpp.zip',
         'versionId': 'lmkBVR5t4UF1UUwMwEirnk9H_8Nt90IO',
@@ -97,6 +97,7 @@ ANDROID_PACKAGES = {
         'includeLibs': {'libbreakpad_client.a'}
     }
 }
+
 ANDROID_PACKAGES32 = {
     'qt' : {
         'file': 'qt-5.11.1_linux_armv7.zip',
@@ -106,23 +107,17 @@ ANDROID_PACKAGES32 = {
     'bullet': {
         'file': 'bullet-2.88_armv7-libcpp.zip',
         'versionId': '',
-        'sharedLibFolder': 'lib',
-        'includeLibs': ['libBullet.a'],
         'checksum': '',
     },            
     'draco': {
         'file': 'draco_armv7-libcpp.zip',
         'versionId': '',
-        'sharedLibFolder': 'lib',
-        'includeLibs': ['libdraco.a', 'libdracodec.a','libdracoenc.a'],
         'checksum': '',
     },
     'glad': {
         'file': 'glad_armv7-libcpp.zip',
         'versionId': '',
-        'sharedLibFolder': 'lib',
-        'includeLibs': ['libglad.a', 'libglad_d.a'],
-        'checksum': ''
+        'checksum': '',
     },
     'nvtt': {
         'file': 'nvtt_armv7-libcpp.zip',
@@ -131,18 +126,16 @@ ANDROID_PACKAGES32 = {
         'sharedLibFolder': 'lib',
         'includeLibs': ['libnvtt.so']
     },
-    #'htcwvr': {
-    #    'file': 'wvr.zip',
-    #    'versionId': 'TODO',
-    #    'checksum': 'TODO',
-    #    'sharedLibFolder': 'Android/libs/armeabo-v7a',
-    #    'includeLibs': ['libsvrapi.so']
-    #},
+    'wavesdkmobile': {
+        'file': 'waveskd-3_0_2_armeabi-v7a.zip',
+        'versionId': '',
+        'checksum': '',
+        'sharedLibFolder': 'lib',
+        'includeLibs': ['libsvrapi.so','libvrcore.so','libwvr_api.so','libwvr_ctf_internal_common.so']
+    },
     'openssl': {
         'file': 'openssl-1.1.0g_armv7.zip',
         'versionId': '',
-        'sharedLibFolder': 'lib',
-         'includeLibs': ['libssl.a', 'libcrypto.a'],
         'checksum': ''
     },
     'polyvox': {
@@ -161,18 +154,12 @@ ANDROID_PACKAGES32 = {
     },
     'hifiAC': {
         'file': 'codecSDK-android_armv7-2.0.zip',
-        'checksum': '',
-        'sharedLibFolder': 'codecSDK',
-        'includeLibs': {'Release/libaudio.a'},
-       
+        'checksum': ''
     },
     'etc2comp': {
         'file': 'etc2comp-armv7-libcpp.zip',
         'versionId': '',
-        'sharedLibFolder': 'lib',
-        'includeLibs': {'libEtcLib.a'},
         'checksum': ''
-
     },
     'breakpad': {
         'file': 'breakpad.zip',
@@ -183,34 +170,34 @@ ANDROID_PACKAGES32 = {
     }
 }
 
-ANDROID_PLATFORM_PACKAGES32={
-'Darwin' : {
+ANDROID_PLATFORM_PACKAGES32 = {
+    'Darwin' : {
         'qt': {
-            'file': 'qt-5.11.1_osx_armv8-libcpp_openssl_patched.tgz',
+            'file': 'qt-5.11.1_win_armv7-libcpp_openssl_patched.zip',
             'versionId': '',
             'checksum': ''
         },
     },
     'Windows' : {
         'qt': {
-            'file': 'qt-5.11.1_win_armv7-libcpp_openssl_patched.tgz',
+            'file': 'qt-5.11.1_win_armv7-libcpp_openssl_patched.zip',
             'versionId': '',
             'checksum': ''
         },
     }
+}
 
-} 
 ANDROID_PLATFORM_PACKAGES = {
     'Darwin' : {
         'qt': {
-            'file': 'qt-5.11.1_osx_armv8-libcpp_openssl_patched.zip',
+            'file': 'qt-5.11.1_osx_armv8-libcpp_openssl_patched.tgz',
             'versionId': 'OxBD7iKINv1HbyOXmAmDrBb8AF3N.Kup',
             'checksum': 'c83cc477c08a892e00c71764dca051a0'
         },
     },
     'Windows' : {
         'qt': {
-            'file': 'qt-5.11.1_win_armv8-libcpp_openssl_patched.zip',
+            'file': 'qt-5.11.1_win_armv8-libcpp_openssl_patched.tgz',
             'versionId': 'JfWM0P_Mz5Qp0LwpzhrsRwN3fqlLSFeT',
             'checksum': '0582191cc55431aa4f660848a542883e'
         },
@@ -241,19 +228,22 @@ QT5_DEPS = [
 ]
 
 def getPlatformPackages(abi):
-
-    app = ANDROID_PLATFORM_PACKAGES
-    result = ANDROID_PACKAGES.copy()
-    system = platform.system()
-
     if abi == 'armeabi-v7a':
         print("********* 32 bit ************")
         result=ANDROID_PACKAGES32.copy()
-        app= ANDROID_PLATFORM_PACKAGES32[system]
-         
-    if system in app:
-        platformPackages = app[system]
-        result = { **result, **platformPackages }
+        
+    else:
+        print("********* 64 bit ************")
+        result = ANDROID_PACKAGES.copy()
+    
+    system = platform.system()
+    if system in ANDROID_PLATFORM_PACKAGES:
+        if abi == 'armeabi-v7a':
+            platformPackages = ANDROID_PLATFORM_PACKAGES32[system]
+            result = { **result, **platformPackages }
+        else:
+            platformPackages = ANDROID_PLATFORM_PACKAGES[system]
+            result = { **result, **platformPackages }
     return result
 
 def getPackageUrl(package, abi):
@@ -271,7 +261,7 @@ def getPackageUrl(package, abi):
 
 def copyAndroidLibs(packagePath, appPath, abi):
     androidPackages = getPlatformPackages(abi)
-    jniPath = os.path.join(appPath, 'src/main/jniLibs/'+abi+'/')
+    jniPath = os.path.join(appPath, 'src/main/jniLibs/'+abi)
             
     if not os.path.isdir(jniPath):
         os.makedirs(jniPath)
@@ -285,43 +275,38 @@ def copyAndroidLibs(packagePath, appPath, abi):
                     destFile = os.path.join(jniPath, os.path.split(lib)[1])
                     if not os.path.isfile(destFile):
                         print("Copying {}".format(lib))
-                        print("******source {}, dest {} ".format(sourceFile, destFile))
                         shutil.copy(sourceFile, destFile)
 
-    #not needed for 32 bit
-    if abi == 'arm64-v8a':
-        gvrLibFolder = os.path.join(packagePath, 'gvr/gvr-android-sdk-1.101.0/libraries')
-        audioSoOut = os.path.join(gvrLibFolder, 'libgvr_audio.so')
-        if not os.path.isfile(audioSoOut):
-            audioAar = os.path.join(gvrLibFolder, 'sdk-audio-1.101.0.aar')
-            with zipfile.ZipFile(audioAar) as z:
-                with z.open('jni/arm64-v8a/libgvr_audio.so') as f:
-                    with open(audioSoOut, 'wb') as of:
-                        shutil.copyfileobj(f, of)
+    gvrLibFolder = os.path.join(packagePath, 'gvr/gvr-android-sdk-1.101.0/libraries')
+    audioSoOut = os.path.join(gvrLibFolder, 'libgvr_audio.so')
+    if not os.path.isfile(audioSoOut):
+        audioAar = os.path.join(gvrLibFolder, 'sdk-audio-1.101.0.aar')
+        with zipfile.ZipFile(audioAar) as z:
+            with z.open('jni/arm64-v8a/libgvr_audio.so') as f:
+                with open(audioSoOut, 'wb') as of:
+                    shutil.copyfileobj(f, of)
 
-        audioSoOut2 = os.path.join(jniPath, 'libgvr_audio.so')
-        if not os.path.isfile(audioSoOut2):
-            shutil.copy(audioSoOut, audioSoOut2)
+    audioSoOut2 = os.path.join(jniPath, 'libgvr_audio.so')
+    if not os.path.isfile(audioSoOut2):
+        shutil.copy(audioSoOut, audioSoOut2)
 
-        baseSoOut = os.path.join(gvrLibFolder, 'libgvr.so')
-        if not os.path.isfile(baseSoOut):
-            baseAar = os.path.join(gvrLibFolder, 'sdk-base-1.101.0.aar')
-            with zipfile.ZipFile(baseAar) as z:
-                with z.open('jni/arm64-v8a/libgvr.so') as f:
-                    with open(baseSoOut, 'wb') as of:
-                        shutil.copyfileobj(f, of)
+    baseSoOut = os.path.join(gvrLibFolder, 'libgvr.so')
+    if not os.path.isfile(baseSoOut):
+        baseAar = os.path.join(gvrLibFolder, 'sdk-base-1.101.0.aar')
+        with zipfile.ZipFile(baseAar) as z:
+            with z.open('jni/arm64-v8a/libgvr.so') as f:
+                with open(baseSoOut, 'wb') as of:
+                    shutil.copyfileobj(f, of)
 
-        baseSoOut2 = os.path.join(jniPath, 'libgvr.so')
-        if not os.path.isfile(baseSoOut2):
-            shutil.copy(baseSoOut, baseSoOut2)
+    baseSoOut2 = os.path.join(jniPath, 'libgvr.so')
+    if not os.path.isfile(baseSoOut2):
+        shutil.copy(baseSoOut, baseSoOut2)
 
 class QtPackager:
     def __init__(self, appPath, qtRootPath,abi):
-        print("********* QtPackager Init ************")
         self.appPath = appPath
         self.qtRootPath = qtRootPath
         self.jniPath = os.path.join(self.appPath, 'src/main/jniLibs/'+abi)
-        print('********** src/main/jniLibs/'+abi)
         self.assetPath = os.path.join(self.appPath, 'src/main/assets')
         self.qtAssetPath = os.path.join(self.assetPath, '--Added-by-androiddeployqt--')
         self.qtAssetCacheList = os.path.join(self.qtAssetPath, 'qt_cache_pregenerated_file_list')
@@ -333,7 +318,6 @@ class QtPackager:
         self.permissions = []
 
     def copyQtDeps(self):
-        print('********** CopyQtDeps *********')
         for lib in QT5_DEPS:
             libfile = os.path.join(self.qtRootPath, "lib/lib{}.so".format(lib))
             if not os.path.exists(libfile):
@@ -360,7 +344,6 @@ class QtPackager:
                     self.features.append(item.attrib['name'])
 
     def scanQmlImports(self):
-        print('********** scanQmlImports *********')
         qmlImportCommandFile = os.path.join(self.qtRootPath, 'bin/qmlimportscanner')
         system = platform.system()
         if 'Windows' == system:
@@ -390,7 +373,6 @@ class QtPackager:
             self.files.extend(hifi_utils.recursiveFileList(path, excludeNamePattern=r"^\."))
 
     def processFiles(self):
-        print('********** scanQmlImports *********')
         self.files = list(set(self.files))
         self.files.sort()
         libsXmlRoot = ET.Element('resources')
@@ -466,7 +448,6 @@ class QtPackager:
         # }
 
     def bundle(self):
-        print('********** bundle *********')
         if not os.path.isfile(self.xmlFile):
             print("Bundling Qt info into {}".format(self.xmlFile))
             self.copyQtDeps()

@@ -40,6 +40,7 @@ android {
                     '-DDISABLE_QML=OFF',
                     '-DDISABLE_KTX_CACHE=OFF',
                     '-DUSE_BREAKPAD=OFF'
+
                 targets = ['focusInterface']
             }
         }

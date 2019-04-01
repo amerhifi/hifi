@@ -3,12 +3,12 @@ setup_hifi_library()
 link_hifi_libraries(
     shared task networking qml
     image fbx hfm render-utils physics entities octree
-    
+    vivefocus_plugin
     gl gpu ${PLATFORM_GL_BACKEND}
 )
 target_opengl()
 target_bullet()
-
+target_vivefocus()
 add_subdirectory("${CMAKE_SOURCE_DIR}/interface" "libraries/interface")
 include_directories("${CMAKE_SOURCE_DIR}/interface/src")
 add_subdirectory("${CMAKE_SOURCE_DIR}/plugins/hifiCodec" "libraries/hifiCodecPlugin")
