@@ -13,6 +13,6 @@ if (ANDROID)
     target_glm()
     target_egl()
     target_glad()
-    target_vivefocus()
     target_link_libraries(${TARGET_NAME} android log)
 endif()
+

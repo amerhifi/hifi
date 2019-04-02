@@ -277,30 +277,31 @@ def copyAndroidLibs(packagePath, appPath, abi):
                         print("Copying {}".format(lib))
                         shutil.copy(sourceFile, destFile)
 
-    gvrLibFolder = os.path.join(packagePath, 'gvr/gvr-android-sdk-1.101.0/libraries')
-    audioSoOut = os.path.join(gvrLibFolder, 'libgvr_audio.so')
-    if not os.path.isfile(audioSoOut):
-        audioAar = os.path.join(gvrLibFolder, 'sdk-audio-1.101.0.aar')
-        with zipfile.ZipFile(audioAar) as z:
-            with z.open('jni/arm64-v8a/libgvr_audio.so') as f:
-                with open(audioSoOut, 'wb') as of:
-                    shutil.copyfileobj(f, of)
+    if not abi == 'armeabi-v7a':
+        gvrLibFolder = os.path.join(packagePath, 'gvr/gvr-android-sdk-1.101.0/libraries')
+        audioSoOut = os.path.join(gvrLibFolder, 'libgvr_audio.so')
+        if not os.path.isfile(audioSoOut):
+            audioAar = os.path.join(gvrLibFolder, 'sdk-audio-1.101.0.aar')
+            with zipfile.ZipFile(audioAar) as z:
+                with z.open('jni/arm64-v8a/libgvr_audio.so') as f:
+                    with open(audioSoOut, 'wb') as of:
+                        shutil.copyfileobj(f, of)
 
-    audioSoOut2 = os.path.join(jniPath, 'libgvr_audio.so')
-    if not os.path.isfile(audioSoOut2):
-        shutil.copy(audioSoOut, audioSoOut2)
+        audioSoOut2 = os.path.join(jniPath, 'libgvr_audio.so')
+        if not os.path.isfile(audioSoOut2):
+            shutil.copy(audioSoOut, audioSoOut2)
 
-    baseSoOut = os.path.join(gvrLibFolder, 'libgvr.so')
-    if not os.path.isfile(baseSoOut):
-        baseAar = os.path.join(gvrLibFolder, 'sdk-base-1.101.0.aar')
-        with zipfile.ZipFile(baseAar) as z:
-            with z.open('jni/arm64-v8a/libgvr.so') as f:
-                with open(baseSoOut, 'wb') as of:
-                    shutil.copyfileobj(f, of)
+        baseSoOut = os.path.join(gvrLibFolder, 'libgvr.so')
+        if not os.path.isfile(baseSoOut):
+            baseAar = os.path.join(gvrLibFolder, 'sdk-base-1.101.0.aar')
+            with zipfile.ZipFile(baseAar) as z:
+                with z.open('jni/arm64-v8a/libgvr.so') as f:
+                    with open(baseSoOut, 'wb') as of:
+                        shutil.copyfileobj(f, of)
 
-    baseSoOut2 = os.path.join(jniPath, 'libgvr.so')
-    if not os.path.isfile(baseSoOut2):
-        shutil.copy(baseSoOut, baseSoOut2)
+        baseSoOut2 = os.path.join(jniPath, 'libgvr.so')
+        if not os.path.isfile(baseSoOut2):
+            shutil.copy(baseSoOut, baseSoOut2)
 
 class QtPackager:
     def __init__(self, appPath, qtRootPath,abi):
