@@ -5,10 +5,12 @@
 
 #include <QTimer>
 #include <QtPlatformHeaders/QEGLNativeContext>
-#include <QtAndroidExtras/QAndroidJniObject>
+//#include <QtAndroidExtras/QAndroidJniObject>
 
 #include <gl/Context.h>
-
+#include <plugins/PluginManager.h>
+#include <ui-plugins/PluginContainer.h>
+#include <input-plugins/KeyboardMouseDevice.h>
 
 class ViveFocusDisplayPlugin : public HmdDisplayPlugin {
     using Parent = HmdDisplayPlugin;
@@ -32,6 +34,8 @@ public:
     float getTargetFrameRate() const override;
     void init() override;
     void deinit() override;
+
+  
 
 protected:
 

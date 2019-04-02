@@ -110,7 +110,10 @@ if (ANDROID)
     
     if( NOT ${HIFI_ANDROID_APP} STREQUAL "focusInterface")
       set(PLATFORM_PLUGIN_LIBRARIES oculusMobile oculusMobilePlugin)
+    else()
+        set(PLATFORM_PLUGIN_LIBRARIES vivefocusplugin)
     endif()
+
   endif()
 
   # Allow client code to use preprocessor macros to distinguish between quest and non-quest builds

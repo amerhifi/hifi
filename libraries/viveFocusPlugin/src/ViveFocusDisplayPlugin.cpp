@@ -1,3 +1,11 @@
+//
+//  Created by Amer Cerkic on 2019/04/01
+//  Copyright 2013-2019 High Fidelity, Inc.
+//
+//  Distributed under the Apache License, Version 2.0.
+//  See the accompanying file LICENSE or http://www.apache.org/licenses/LICENSE-2.0.html
+//
+
 #include "ViveFocusDisplayPlugin.h"
 
 #include <QtAndroidExtras/QAndroidJniEnvironment>
@@ -49,8 +57,6 @@ void ViveFocusDisplayPlugin::internalDeactivate(){
 }
 
 void ViveFocusDisplayPlugin::customizeContext(){
-
-
 
  Parent::customizeContext();
 
@@ -111,28 +117,38 @@ void ViveFocusDisplayPlugin::internalPresent(const gpu::FramebufferPointer& comp
 }
 
 bool ViveFocusDisplayPlugin::isHmdMounted() const {
-    bool result = false;
+    bool result = true;
 //  VrHandler::withOvrJava([&](const ovrJava* java){
 //        result = VRAPI_FALSE != vrapi_GetSystemStatusInt(java, VRAPI_SYS_STATUS_MOUNTED);
  //   });
     return result;
 }
 
-DisplayPluginList getDisplayPlugins() {
-    static DisplayPluginList result;
-    static std::once_flag once;
-    std::call_once(once, [&]{
-        auto plugin = std::make_shared<ViveFocusDisplayPlugin>();
-        plugin->isSupported();
-        result.push_back(plugin);
-    });
-    return result;
-}
+ DisplayPluginList getDisplayPlugins() {
+        static DisplayPluginList result;
+        static std::once_flag once;
+        std::call_once(once, [&]{
+            auto plugin = std::make_shared<ViveFocusDisplayPlugin>();
+            plugin->isSupported();
+            result.push_back(plugin);
+        });
+        return result;
+    }
 
-InputPluginList getInputPlugins() {
-    InputPlugin *PLUGIN_POOL[] = {
-        new KeyboardMouseDevice(),
-        //new OculusMobileControllerManager(),
-        nullptr
-    };
-}
+  InputPluginList getInputPlugins() {
+        InputPlugin* PLUGIN_POOL[] = {
+            new KeyboardMouseDevice(),
+            // new OculusMobileControllerManager(),
+            nullptr
+        };
+
+        InputPluginList result;
+        for (int i = 0; PLUGIN_POOL[i]; ++i) {
+            InputPlugin* plugin = PLUGIN_POOL[i];
+            if (plugin->isSupported()) {
+                result.push_back(InputPluginPointer(plugin));
+            }
+        }
+        return result;
+    }
+

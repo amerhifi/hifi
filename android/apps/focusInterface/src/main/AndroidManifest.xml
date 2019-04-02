@@ -39,7 +39,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="io.highfidelity.focusInterface.Interface"
+            android:name="io.highfidelity.focusInterface.InterfaceActivity"
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation"
             android:label="@string/app_name"
             android:launchMode="singleTask">

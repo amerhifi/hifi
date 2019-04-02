@@ -54,7 +54,7 @@ public class PermissionsChecker extends Activity {
     }
 
     private void launchActivityWithPermissions() {
-        Intent intent = new Intent(this, Interface.class);
+        Intent intent = new Intent(this, InterfaceActivity.class);
 
         if (!TextUtils.isEmpty(mArgs)) {
             intent.putExtra("applicationArguments", mArgs);

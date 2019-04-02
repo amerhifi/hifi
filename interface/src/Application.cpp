@@ -701,7 +701,7 @@ static const QString STATE_PLATFORM_ANDROID = "PlatformAndroid";
 // Statically provided display and input plugins
 extern DisplayPluginList getDisplayPlugins();
 extern InputPluginList getInputPlugins();
-extern void saveInputPluginSettings(const InputPluginList& plugins);
+extern  void saveInputPluginSettings(const InputPluginList& plugins);
 
 // Parameters used for running tests from teh command line
 const QString TEST_SCRIPT_COMMAND{ "--testScript" };
