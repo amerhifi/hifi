@@ -11,16 +11,16 @@
 
 
 class ViveFocusDisplayPlugin : public HmdDisplayPlugin {
-    using parent = HmdDisplayPlugin;
+    using Parent = HmdDisplayPlugin;
 
 public:
     ViveFocusDisplayPlugin();
-    virtual ~ ViveFocusDisplayPlugin();
-    bool isSupported() const overrride {return true;}
-    bool hasAsyncReprojection() const override {return true;}
-    bool getSupportsAutoSwitch() override final {return false;}
+    virtual ~ViveFocusDisplayPlugin();
+    bool isSupported() const override { return true; };
+    bool hasAsyncReprojection() const override {return true;};
+    bool getSupportsAutoSwitch() override final {return false;};
 
-    QThread::Priority getPresentPriority() override {return QTThread::TimeCriticalPriority;}
+    QThread::Priority getPresentPriority() override {return QThread::TimeCriticalPriority;}
 
     glm::mat4 getEyeProjection(Eye eye, const glm::mat4& baseProjection) const override;
     glm::mat4 getCullingProjection(const glm::mat4& baseProjection) const override;
@@ -52,4 +52,4 @@ protected:
     static const char* NAME;
     mutable gl::Context* _mainContext{ nullptr };
     uint32_t _readFbo;
-}
+};

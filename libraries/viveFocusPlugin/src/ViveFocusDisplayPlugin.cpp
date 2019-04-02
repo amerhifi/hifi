@@ -1,4 +1,4 @@
-#include "VivefocusdDisplayPlugin.h"
+#include "ViveFocusDisplayPlugin.h"
 
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,22 +18,22 @@
 #include <gl/Context.h>
 #include <MainWindow.h>
 #include <AddressManager.h>
-
-const char* OculusMobileDisplayPlugin::NAME { "Vive Focus" };
+#include <input-plugins/KeyboardMouseDevice.h>
+const char* ViveFocusDisplayPlugin::NAME { "Vive Focus" };
 
 ViveFocusDisplayPlugin::ViveFocusDisplayPlugin(){}
 
 ViveFocusDisplayPlugin::~ViveFocusDisplayPlugin(){}
 
-void OculusMobileDisplayPlugin::init() {
+void ViveFocusDisplayPlugin::init() {
     Parent::init();
-    initVr();
+   // initVr();
 
     emit deviceConnected(getName());
 }
 
-void OculusMobileDisplayPlugin::deinit() {
-    shutdownVr();
+void ViveFocusDisplayPlugin::deinit() {
+   // shutdownVr();
     Parent::deinit();
 }
 
@@ -66,7 +66,7 @@ QRectF ViveFocusDisplayPlugin::getPlayAreaRect() {
     return  QRectF{0,0, 1200, 1200};
 }
 
-]
+
 glm::mat4 ViveFocusDisplayPlugin::getEyeProjection(Eye eye, const glm::mat4& baseProjection) const {
 
     return baseProjection;
@@ -94,10 +94,10 @@ bool ViveFocusDisplayPlugin::beginFrameRender(uint32_t frameIndex) {
 void ViveFocusDisplayPlugin::updatePresentPose() {}
 
 void ViveFocusDisplayPlugin::internalPresent(const gpu::FramebufferPointer& compsiteFramebuffer) {
-    if (!vrActive()) {
-        QThread::msleep(1);
-        return;
-    }
+   // if (!vrActive()) {
+      //  QThread::msleep(1);
+       // return;
+   // }
 
     GLuint sourceTexture = 0;
     glm::uvec2 sourceSize;
@@ -108,4 +108,31 @@ void ViveFocusDisplayPlugin::internalPresent(const gpu::FramebufferPointer& comp
     //VrHandler::presentFrame(sourceTexture, sourceSize, presentTracking);
     _presentRate.increment();
 
+}
+
+bool ViveFocusDisplayPlugin::isHmdMounted() const {
+    bool result = false;
+//  VrHandler::withOvrJava([&](const ovrJava* java){
+//        result = VRAPI_FALSE != vrapi_GetSystemStatusInt(java, VRAPI_SYS_STATUS_MOUNTED);
+ //   });
+    return result;
+}
+
+DisplayPluginList getDisplayPlugins() {
+    static DisplayPluginList result;
+    static std::once_flag once;
+    std::call_once(once, [&]{
+        auto plugin = std::make_shared<ViveFocusDisplayPlugin>();
+        plugin->isSupported();
+        result.push_back(plugin);
+    });
+    return result;
+}
+
+InputPluginList getInputPlugins() {
+    InputPlugin *PLUGIN_POOL[] = {
+        new KeyboardMouseDevice(),
+        //new OculusMobileControllerManager(),
+        nullptr
+    };
 }
