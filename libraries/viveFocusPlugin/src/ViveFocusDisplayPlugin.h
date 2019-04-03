@@ -3,10 +3,6 @@
 #include <display-plugins/hmd/HmdDisplayPlugin.h>
 #include <EGL/egl.h>
 
-#include <QTimer>
-#include <QtPlatformHeaders/QEGLNativeContext>
-//#include <QtAndroidExtras/QAndroidJniObject>
-
 #include <gl/Context.h>
 #include <plugins/PluginManager.h>
 #include <ui-plugins/PluginContainer.h>

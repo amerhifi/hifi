@@ -7,10 +7,8 @@
 //
 
 #include "ViveFocusDisplayPlugin.h"
-
 #include <QtAndroidExtras/QAndroidJniEnvironment>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include <AbstractViewStateInterface.h>
 #include <gpu/Frame.h>
 #include <gpu/Context.h>

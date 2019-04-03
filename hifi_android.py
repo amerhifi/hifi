@@ -34,11 +34,11 @@ ANDROID_PACKAGES = {
         'versionId': 'r5Zran.JSCtvrrB6Q4KaqfIoALPw3lYY',
         'checksum': 'a8ee8584cf1ccd34766c7ddd9d5e5449',
     },
-   ## 'gvr': {
-   #     'file': 'gvrsdk_v1.101.0.tgz',
-   #     'versionId': 'nqBV_j81Uc31rC7bKIrlya_Hah4v3y5r',
-   #     'checksum': '57fd02baa069176ba18597a29b6b4fc7',
-   # },
+   'gvr': {
+        'file': 'gvrsdk_v1.101.0.tgz',
+        'versionId': 'nqBV_j81Uc31rC7bKIrlya_Hah4v3y5r',
+        'checksum': '57fd02baa069176ba18597a29b6b4fc7',
+   },
     'nvtt': {
         'file': 'nvtt_armv8-libcpp.zip',
         'versionId': 'lmkBVR5t4UF1UUwMwEirnk9H_8Nt90IO',
@@ -229,11 +229,8 @@ QT5_DEPS = [
 
 def getPlatformPackages(abi):
     if abi == 'armeabi-v7a':
-        print("********* 32 bit ************")
         result=ANDROID_PACKAGES32.copy()
-        
     else:
-        print("********* 64 bit ************")
         result = ANDROID_PACKAGES.copy()
     
     system = platform.system()

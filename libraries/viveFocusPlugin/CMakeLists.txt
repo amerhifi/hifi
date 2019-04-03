@@ -19,7 +19,7 @@ if (ANDROID)
         plugins ui-plugins display-plugins input-plugins
         audio-client networking render-utils
         render graphics
-	${PLATFORM_GL_BACKEND}
+	    ${PLATFORM_GL_BACKEND}
     )
 
     target_link_libraries(${TARGET_NAME} android log)

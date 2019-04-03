@@ -25,7 +25,14 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName appVersionName
+        multiDexEnabled true
         ndk { abiFilters 'armeabi-v7a' }
+        splits {
+            abi {
+                reset()
+                include "armeabi-v7a"
+            }
+        }
         externalNativeBuild {
             cmake {
                 arguments '-DHIFI_ANDROID=1',
