@@ -265,7 +265,7 @@ void ShapeEntityRenderer::doRender(RenderArgs* args) {
         if (_procedural.isReady()) {
             outColor = _procedural.getColor(outColor);
             outColor.a *= _procedural.isFading() ? Interpolate::calculateFadeRatio(_procedural.getFadeStartTime()) : 1.0f;
-            _procedural.prepare(batch, _position, _dimensions, _orientation, ProceduralProgramKey(outColor.a < 1.0f));
+            _procedural.prepare(batch, _position, _dimensions, _orientation, _created, ProceduralProgramKey(outColor.a < 1.0f));
             proceduralRender = true;
         }
     });
@@ -291,8 +291,7 @@ void ShapeEntityRenderer::doRender(RenderArgs* args) {
             geometryCache->renderSolidShapeInstance(args, batch, geometryShape, outColor, pipeline);
         }
     } else {
-        if (args->_renderMode != render::Args::RenderMode::SHADOW_RENDER_MODE) {
-            RenderPipelines::bindMaterials(materials, batch, args->_enableTexturing);
+        if (RenderPipelines::bindMaterials(materials, batch, args->_renderMode, args->_enableTexturing)) {
             args->_details._materialSwitches++;
         }
 
