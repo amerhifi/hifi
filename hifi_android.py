@@ -100,7 +100,7 @@ ANDROID_PACKAGES = {
 
 ANDROID_PACKAGES32 = {
     'qt' : {
-        'file': 'qt-5.11.1_linux_armv7.zip',
+        'file': 'qt-5.12.3_linux_armv7.zip',
         'versionId': '',
         'checksum': '',
     },
@@ -173,14 +173,14 @@ ANDROID_PACKAGES32 = {
 ANDROID_PLATFORM_PACKAGES32 = {
     'Darwin' : {
         'qt': {
-            'file': 'qt-5.11.1_win_armv7-libcpp_openssl_patched.zip',
+            'file': 'qt-5.12.3_linux_armv7.zip',
             'versionId': '',
             'checksum': ''
         },
     },
     'Windows' : {
         'qt': {
-            'file': 'qt-5.11.1_win_armv7-libcpp_openssl_patched.zip',
+            'file': 'qt-5.12.3_linux_armv7.zip',
             'versionId': '',
             'checksum': ''
         },
@@ -197,7 +197,7 @@ ANDROID_PLATFORM_PACKAGES = {
     },
     'Windows' : {
         'qt': {
-            'file': 'qt-5.11.1_win_armv8-libcpp_openssl_patched.tgz',
+            'file': 'qt-5.12.3_linux_armv7.zip',
             'versionId': 'JfWM0P_Mz5Qp0LwpzhrsRwN3fqlLSFeT',
             'checksum': '0582191cc55431aa4f660848a542883e'
         },
