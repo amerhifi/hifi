@@ -10,7 +10,6 @@ link_hifi_libraries(
 
 target_opengl()
 target_bullet()
-target_vivefocus()
 add_subdirectory("${CMAKE_SOURCE_DIR}/interface" "libraries/interface")
 include_directories("${CMAKE_SOURCE_DIR}/interface/src")
 add_subdirectory("${CMAKE_SOURCE_DIR}/plugins/hifiCodec" "libraries/hifiCodecPlugin")

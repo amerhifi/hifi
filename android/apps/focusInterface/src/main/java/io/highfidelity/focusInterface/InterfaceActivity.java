@@ -10,9 +10,9 @@ import io.highfidelity.utils.HifiUtils;
 
 public class InterfaceActivity extends QtActivity{
     private static final String TAG = InterfaceActivity.class.getSimpleName();
-   // static { System.loadLibrary("focusInterface"); }
+    static { System.loadLibrary("focusInterface"); }
 
- //   private native void NativeOnCreate(AssetManager obj);
+    private native void NativeOnCreate(AssetManager obj);
  //   private native void NativeOnPause();
  //   private native void NativeOnResume();
  //   private native void OnAppAfterLoad();
@@ -31,7 +31,7 @@ public class InterfaceActivity extends QtActivity{
 
         super.onCreate(savedInstanceState);
 
-      //  NativeOnCreate(getAssets());
+        NativeOnCreate(getAssets());
     }
 
 

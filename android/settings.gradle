@@ -6,7 +6,7 @@ if(!getSettings().hasProperty("SUPPRESS_QUEST_INTERFACE")) {
     include ':oculus'
     project(':oculus').projectDir = new File(settingsDir, 'libraries/oculus')
 }
-include ':qt'
+include ':qt', ':wvr_client'
 project(':qt').projectDir = new File(settingsDir, 'libraries/qt')
 
 //
@@ -15,7 +15,10 @@ project(':qt').projectDir = new File(settingsDir, 'libraries/qt')
 
 if (!getSettings().hasProperty("SUPPRESS_INTERFACE")) {
     include ':interface'
+
     project(':interface').projectDir = new File(settingsDir, 'apps/interface')
+
+
 }
 
 if (!getSettings().hasProperty("SUPPRESS_QUEST_INTERFACE")) {
@@ -26,8 +29,12 @@ if (!getSettings().hasProperty("SUPPRESS_QUEST_INTERFACE")) {
 
 if (!getSettings().hasProperty("SUPPRESS_FOCUS_INTERFACE")) {
     include ':focusInterface'
+    include ':focusInterface', ':wvr_client'
     project(':focusInterface').projectDir = new File(settingsDir, 'apps/focusInterface')
+
 }
+
+
 //
 // Test projects
 //

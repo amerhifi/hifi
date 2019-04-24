@@ -154,4 +154,5 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: '../../libraries/qt/libs')
     implementation project(':qt')
+    implementation project(':wvr_client')
 }

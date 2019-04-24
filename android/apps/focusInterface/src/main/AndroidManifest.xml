@@ -43,6 +43,7 @@
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation"
             android:label="@string/app_name"
             android:launchMode="singleTask">
+            <meta-data android:name="minWaveSDKVersion" android:value="1"/>
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="focusInterface" />

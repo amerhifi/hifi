@@ -25,6 +25,7 @@
 #include <MainWindow.h>
 #include <AddressManager.h>
 #include <input-plugins/KeyboardMouseDevice.h>
+
 const char* ViveFocusDisplayPlugin::NAME { "Vive Focus" };
 
 ViveFocusDisplayPlugin::ViveFocusDisplayPlugin(){}
@@ -94,10 +95,9 @@ bool ViveFocusDisplayPlugin::beginFrameRender(uint32_t frameIndex) {
     return true;
 }
 
-
 void ViveFocusDisplayPlugin::updatePresentPose() {}
 
-void ViveFocusDisplayPlugin::internalPresent(const gpu::FramebufferPointer& compsiteFramebuffer) {
+void ViveFocusDisplayPlugin::internalPresent(){
    // if (!vrActive()) {
       //  QThread::msleep(1);
        // return;
@@ -105,12 +105,12 @@ void ViveFocusDisplayPlugin::internalPresent(const gpu::FramebufferPointer& comp
 
     GLuint sourceTexture = 0;
     glm::uvec2 sourceSize;
-    if (compsiteFramebuffer) {
-        sourceTexture = getGLBackend()->getTextureID(compsiteFramebuffer->getRenderBuffer(0));
-        sourceSize = { compsiteFramebuffer->getWidth(), compsiteFramebuffer->getHeight() };
-    }
+//    if (compsiteFramebuffer) {
+//        sourceTexture = getGLBackend()->getTextureID(compsiteFramebuffer->getRenderBuffer(0));
+ //       sourceSize = { compsiteFramebuffer->getWidth(), compsiteFramebuffer->getHeight() };
+ //   }
     //VrHandler::presentFrame(sourceTexture, sourceSize, presentTracking);
-    _presentRate.increment();
+  //  _presentRate.increment();
 
 }
 
@@ -133,7 +133,7 @@ bool ViveFocusDisplayPlugin::isHmdMounted() const {
         return result;
     }
 
-  InputPluginList getInputPlugins() {
+    InputPluginList getInputPlugins() {
         InputPlugin* PLUGIN_POOL[] = {
             new KeyboardMouseDevice(),
             // new OculusMobileControllerManager(),

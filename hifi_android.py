@@ -131,7 +131,7 @@ ANDROID_PACKAGES32 = {
         'versionId': '',
         'checksum': '',
         'sharedLibFolder': 'lib',
-        'includeLibs': ['libsvrapi.so','libvrcore.so','libwvr_api.so','libwvr_ctf_internal_common.so']
+        'includeLibs': ['wvr_client.aar','wvr_ime_client.aar']
     },
     'openssl': {
         'file': 'openssl-1.1.0g_armv7.zip',
