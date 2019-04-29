@@ -25,6 +25,7 @@
 #include "shared/Bilateral.h"
 #include "Transform.h"
 #include "PhysicsCollisionGroups.h"
+#include "StencilMaskMode.h"
 
 class QColor;
 class QUrl;
@@ -686,7 +687,6 @@ public:
      * Get the number of vertices in the mesh.
      * @function MeshProxy#getNumVertices
      * @returns {number} Integer number of vertices in the mesh.
-     * @deprecated Use the {@link Graphics} API instead.
      */
     Q_INVOKABLE virtual int getNumVertices() const = 0;
 
@@ -695,7 +695,6 @@ public:
      * @function MeshProxy#getPos
      * @param {number} index - Integer index of the mesh vertex.
      * @returns {Vec3} Local position of the vertex relative to the mesh.
-     * @deprecated Use the {@link Graphics} API instead.
      */
     Q_INVOKABLE virtual glm::vec3 getPos(int index) const = 0;
     Q_INVOKABLE virtual glm::vec3 getPos3(int index) const { return getPos(index); } // deprecated
@@ -733,5 +732,8 @@ void qVectorMeshFaceFromScriptValue(const QScriptValue& array, QVector<MeshFace>
 
 QVariantMap parseTexturesToMap(QString textures, const QVariantMap& defaultTextures);
 
+Q_DECLARE_METATYPE(StencilMaskMode)
+QScriptValue stencilMaskModeToScriptValue(QScriptEngine* engine, const StencilMaskMode& stencilMode);
+void stencilMaskModeFromScriptValue(const QScriptValue& object, StencilMaskMode& stencilMode);
 
 #endif // hifi_RegisteredMetaTypes_h
