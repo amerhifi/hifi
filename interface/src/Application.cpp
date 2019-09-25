@@ -6986,6 +6986,7 @@ void Application::queryOctree(NodeType_t serverType, PacketType packetType) {
 
         // encode the query data
         auto packetData = reinterpret_cast<unsigned char*>(queryPacket->getPayload());
+        _octreeQuery.setBoundaryLevelAdjust(127);
         int packetSize = _octreeQuery.getBroadcastData(packetData);
         queryPacket->setPayloadSize(packetSize);
 
