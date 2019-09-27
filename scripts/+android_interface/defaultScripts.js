@@ -14,10 +14,11 @@
 var DEFAULT_SCRIPTS_COMBINED = [
     "system/progress.js",
     "system/+android_interface/touchscreenvirtualpad.js",
-    "system/+android_interface/actionbar.js",
+	"simplifiedUIBootstrapper.js",
+    /*"system/+android_interface/actionbar.js",
     "system/+android_interface/audio.js" ,
     "system/+android_interface/modes.js",
-    "system/makeUserConnection.js"/*,
+    "system/makeUserConnection.js",
     "system/away.js",
     "system/controllers/controllerDisplayManager.js",
     "system/controllers/handControllerGrabAndroid.js",
