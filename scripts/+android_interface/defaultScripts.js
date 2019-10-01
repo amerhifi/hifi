@@ -14,24 +14,7 @@
 var DEFAULT_SCRIPTS_COMBINED = [
     "system/progress.js",
     "system/+android_interface/touchscreenvirtualpad.js",
-	"simplifiedUIBootstrapper.js",
-    /*"system/+android_interface/actionbar.js",
-    "system/+android_interface/audio.js" ,
-    "system/+android_interface/modes.js",
-    "system/makeUserConnection.js",
-    "system/away.js",
-    "system/controllers/controllerDisplayManager.js",
-    "system/controllers/handControllerGrabAndroid.js",
-    "system/controllers/handControllerPointerAndroid.js",
-    "system/controllers/squeezeHands.js",
-    "system/controllers/grab.js",
-    "system/controllers/teleport.js",
-    "system/controllers/toggleAdvancedMovementForHandControllers.js",
-    "system/dialTone.js",
-    "system/firstPersonHMD.js",
-    "system/bubble.js",
-    "system/android.js",
-    "developer/debugging/debugAndroidMouse.js"*/
+    "simplifiedUI/ui/simplifiedUI.js"
 ];
 
 var DEBUG_SCRIPTS = [

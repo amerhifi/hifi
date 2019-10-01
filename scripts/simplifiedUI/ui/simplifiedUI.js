@@ -431,7 +431,7 @@ var TOP_BAR_QML_PATH = Script.resourcesPath() + "qml/hifi/simplifiedUI/topBar/Si
 var TOP_BAR_WINDOW_TITLE = "Simplified Top Bar";
 var TOP_BAR_PRESENTATION_MODE = Desktop.PresentationMode.NATIVE;
 var TOP_BAR_WIDTH_PX = Window.innerWidth;
-var TOP_BAR_HEIGHT_PX = 48;
+var TOP_BAR_HEIGHT_PX = Window.innerHeight;
 var topBarWindow = false;
 function loadSimplifiedTopBar() {
     var windowProps = {
@@ -475,6 +475,11 @@ function maybeDeleteInputDeviceMutedOverlay() {
 
 function getInputDeviceMutedOverlayTopY() {
     return (Window.innerHeight - INPUT_DEVICE_MUTED_OVERLAY_DEFAULT_Y_PX - INPUT_DEVICE_MUTED_MARGIN_BOTTOM_PX);
+}
+
+function setAvatarPos(x,y,z){
+    MyAvatar.position={x,y,z};
+
 }
 
 
@@ -590,7 +595,7 @@ function restoreLODSettings() {
 
 var nametag = Script.require("./simplifiedNametag/simplifiedNametag.js?" + Date.now());
 var si = Script.require("./simplifiedStatusIndicator/simplifiedStatusIndicator.js?" + Date.now());
-var emote = Script.require("../simplifiedEmote/simplifiedEmote.js?" + Date.now());
+//var emote = Script.require("../simplifiedEmote/simplifiedEmote.js?" + Date.now());
 var oldShowAudioTools;
 var oldShowBubbleTools;
 var keepExistingUIAndScriptsSetting = Settings.getValue("simplifiedUI/keepExistingUIAndScripts", false);
