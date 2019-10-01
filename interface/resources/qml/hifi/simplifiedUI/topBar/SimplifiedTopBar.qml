@@ -49,7 +49,8 @@ Rectangle {
                 yy.text= mouseX
                 xx.text=mouseY
               
-                MyAvatar.position=[Vec3({mouseX,mouseY,0})]
+                
+                MyAvatar.goToLocation(mouseX,-95,-mouseY)
               }
            }  
         }
