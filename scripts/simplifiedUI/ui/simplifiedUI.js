@@ -477,12 +477,6 @@ function getInputDeviceMutedOverlayTopY() {
     return (Window.innerHeight - INPUT_DEVICE_MUTED_OVERLAY_DEFAULT_Y_PX - INPUT_DEVICE_MUTED_MARGIN_BOTTOM_PX);
 }
 
-function setAvatarPos(x,y,z){
-    MyAvatar.position={x,y,z};
-
-}
-
-
 var inputDeviceMutedOverlay = false;
 var INPUT_DEVICE_MUTED_OVERLAY_DEFAULT_X_PX = 353;
 var INPUT_DEVICE_MUTED_OVERLAY_DEFAULT_Y_PX = 95;

@@ -23,7 +23,7 @@ Rectangle {
         anchors.fill:parent 
           Image {
              id: avatarButtonImage
-             source: "../images/defaultAvatar.svg"
+             source: "../images/Island-map-v1.png"
              width: parent.width
              height: parent.height
           }
@@ -48,8 +48,6 @@ Rectangle {
                onClicked: {
                 yy.text= mouseX
                 xx.text=mouseY
-              
-                
                 MyAvatar.goToLocation(mouseX,-95,-mouseY)
               }
            }  
