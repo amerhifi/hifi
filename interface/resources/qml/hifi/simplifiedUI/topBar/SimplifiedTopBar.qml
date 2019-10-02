@@ -17,16 +17,22 @@ Rectangle {
     anchors.fill: parent
     
    Item {
+   // property variant maps [{name:'birds', coord:{.67, .80}},{name:'cacti', coord:{.51,.79 },{name:'', coord:{ }]
+    
     id: test
     anchors.fill: parent
+   
     Rectangle {
-        anchors.fill:parent 
+        anchors.fill: parent 
+         color: '#000000'
           Image {
              id: avatarButtonImage
              source: "../images/Island-map-v1.png"
-             width: parent.width
-             height: parent.height
-          }
+             width: parent.width /1.25
+             height:parent.height /1.25
+             x: parent.width *.1
+             y: parent.height *.1
+             }
 
           Row{
           padding: 10
@@ -34,20 +40,28 @@ Rectangle {
              Text{
                 id : xx
                 text: 'xx'
-                 font.pointSize: 24
+                font.pointSize: 24
+                color: '#FFFFFF'
              }
 
             Text{
                 id :yy
                 text: 'yy'
-                  font.pointSize: 24
+                font.pointSize: 24
+                color: '#FFFFFF'
+
             }
           }
             MouseArea{
               anchors.fill: parent
                onClicked: {
-                yy.text= mouseX
-                xx.text=mouseY
+                var x = parseFloat(mouseX / (parent.width / 1.25 + parent.height *.1)).toFixed(2)
+                var y = parseFloat(mouseY / (parent.height /1.25 + parent.height *.1)).toFixed(2)
+                
+               // yy.text= maps[0].name
+                xx.text=y
+                
+
                 MyAvatar.goToLocation(mouseX,-95,-mouseY)
               }
            }  

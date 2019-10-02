@@ -13,6 +13,7 @@
 
 var DEFAULT_SCRIPTS_COMBINED = [
     "system/progress.js",
+	"system/+android_interface/audio.js" ,
     "system/+android_interface/touchscreenvirtualpad.js",
     "simplifiedUI/ui/simplifiedUI.js"
 ];
