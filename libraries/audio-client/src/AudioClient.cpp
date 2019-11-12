@@ -1850,6 +1850,8 @@ bool AudioClient::switchInputToAudioDevice(const HifiAudioDeviceInfo inputDevice
         _audioInput->deleteLater();
         _audioInput = NULL;
         _numInputCallbackBytes = 0;
+
+        _inputDeviceInfo.setDevice(QAudioDeviceInfo());
     }
 
     if (_dummyAudioInput) {
@@ -2096,6 +2098,8 @@ bool AudioClient::switchOutputToAudioDevice(const HifiAudioDeviceInfo outputDevi
 
         delete[] _localOutputMixBuffer;
         _localOutputMixBuffer = NULL;
+
+        _outputDeviceInfo.setDevice(QAudioDeviceInfo());
     }
 
     // cleanup any resamplers
@@ -2200,7 +2204,7 @@ bool AudioClient::switchOutputToAudioDevice(const HifiAudioDeviceInfo outputDevi
             localAudioLock.unlock();
 
             // setup a loopback audio output device
-            _loopbackAudioOutput = new QAudioOutput(outputDeviceInfo.getDevice(), _outputFormat, this);
+            _loopbackAudioOutput = new QAudioOutput(outputDeviceInfo.getDevice(), _outputFormat);
 
             _timeSinceLastReceived.start();
 
