@@ -1170,6 +1170,9 @@ void AudioClient::configureWebrtc() {
 // rebuffer into 10ms chunks
 void AudioClient::processWebrtcFarEnd(const int16_t* samples, int numFrames, int numChannels, int sampleRate) {
 
+    if (!_audioOutputInitialized.load(std::memory_order_acquire)) {
+        return;
+    }
     const webrtc::StreamConfig streamConfig = webrtc::StreamConfig(sampleRate, numChannels);
     const int numChunk = (int)streamConfig.num_frames();
 
@@ -1183,7 +1186,9 @@ void AudioClient::processWebrtcFarEnd(const int16_t* samples, int numFrames, int
     }
 
     while (numFrames > 0) {
-
+        if (!_audioOutputInitialized.load(std::memory_order_acquire)) {
+            return;
+        }
         // number of frames to fill
         int numFill = std::min(numFrames, numChunk - _numFifoFarEnd);
 
@@ -1211,7 +1216,9 @@ void AudioClient::processWebrtcFarEnd(const int16_t* samples, int numFrames, int
 }
 
 void AudioClient::processWebrtcNearEnd(int16_t* samples, int numFrames, int numChannels, int sampleRate) {
-
+    if (!_audioOutputInitialized.load(std::memory_order_acquire)) {
+        return;
+    }
     const webrtc::StreamConfig streamConfig = webrtc::StreamConfig(sampleRate, numChannels);
     assert(numFrames == (int)streamConfig.num_frames());    // WebRTC requires exactly 10ms of input
 
@@ -1475,6 +1482,10 @@ void AudioClient::handleRecordedAudioInput(const QByteArray& audio) {
 }
 
 void AudioClient::prepareLocalAudioInjectors(std::unique_ptr<Lock> localAudioLock) {
+    if (!_audioOutputInitialized.load(std::memory_order_acquire)) {
+        return;
+    }
+
     bool doSynchronously = localAudioLock.operator bool();
     if (!localAudioLock) {
         localAudioLock.reset(new Lock(_localAudioMutex));
@@ -1482,6 +1493,10 @@ void AudioClient::prepareLocalAudioInjectors(std::unique_ptr<Lock> localAudioLoc
 
     int samplesNeeded = std::numeric_limits<int>::max();
     while (samplesNeeded > 0) {
+        if (!_audioOutputInitialized.load(std::memory_order_acquire)) {
+            return;
+        }
+
         if (!doSynchronously) {
             // unlock between every write to allow device switching
             localAudioLock->unlock();
