@@ -1183,6 +1183,9 @@ void AudioClient::processWebrtcFarEnd(const int16_t* samples, int numFrames, int
     }
 
     while (numFrames > 0) {
+        if (!_audioOutputInitialized.load(std::memory_order_acquire)) {
+            return;
+        }
 
         // number of frames to fill
         int numFill = std::min(numFrames, numChunk - _numFifoFarEnd);
@@ -1477,7 +1480,9 @@ void AudioClient::handleRecordedAudioInput(const QByteArray& audio) {
 void AudioClient::prepareLocalAudioInjectors(std::unique_ptr<Lock> localAudioLock) {
     bool doSynchronously = localAudioLock.operator bool();
     if (!localAudioLock) {
-        localAudioLock.reset(new Lock(_localAudioMutex));
+        localAudioLock.reset(new Lock(_localAudioMutex, std::try_to_lock));
+        if(!localAudioLock->owns_lock()){
+            return;
     }
 
     int samplesNeeded = std::numeric_limits<int>::max();
@@ -1485,6 +1490,9 @@ void AudioClient::prepareLocalAudioInjectors(std::unique_ptr<Lock> localAudioLoc
         if (!doSynchronously) {
             // unlock between every write to allow device switching
             localAudioLock->unlock();
+            if (!_localSamplesAvailable.load(std::memory_order_acquire)) {
+                return;
+            }
             localAudioLock->lock();
         }
 
@@ -2064,7 +2072,7 @@ bool AudioClient::switchOutputToAudioDevice(const HifiAudioDeviceInfo outputDevi
     if (_audioOutput) {
         _audioOutputIODevice.close();
         _audioOutput->stop();
-        _audioOutputInitialized = false;
+        _audioOutputInitialized.exchange(false, std::memory_order_release);
 
         //must be deleted in next eventloop cycle when its called from notify()
         _audioOutput->deleteLater();
@@ -2172,7 +2180,7 @@ bool AudioClient::switchOutputToAudioDevice(const HifiAudioDeviceInfo outputDevi
             // this ensures lowest latency without stutter from underrun
             _localInjectorsStream.resizeForFrameSize(localPeriod);
 
-            _audioOutputInitialized = true;
+            _audioOutputInitialized.exchange(true, std::memory_order_acquire);
 
             int bufferSize = _audioOutput->bufferSize();
             int bufferSamples = bufferSize / AudioConstants::SAMPLE_SIZE;
@@ -2339,10 +2347,12 @@ qint64 AudioClient::AudioOutputIODevice::readData(char * data, qint64 maxSize) {
         }
     }
 
-    // prepare injectors for the next callback
-    QtConcurrent::run(QThreadPool::globalInstance(), [this] {
-        _audio->prepareLocalAudioInjectors();
-    });
+    if (_audio->_audioOutputInitialized.load(std::memory_order_acquire)) {
+        // prepare injectors for the next callback
+        QtConcurrent::run(QThreadPool::globalInstance(), [this] {
+            _audio->prepareLocalAudioInjectors();
+            });
+    } 
 
     int samplesPopped = std::max(networkSamplesPopped, injectorSamplesPopped);
     if (samplesPopped == 0) {
