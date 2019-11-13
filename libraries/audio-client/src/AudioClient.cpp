@@ -1481,8 +1481,9 @@ void AudioClient::prepareLocalAudioInjectors(std::unique_ptr<Lock> localAudioLoc
     bool doSynchronously = localAudioLock.operator bool();
     if (!localAudioLock) {
         localAudioLock.reset(new Lock(_localAudioMutex, std::try_to_lock));
-        if(!localAudioLock->owns_lock()){
+        if (!localAudioLock->owns_lock()) {
             return;
+        }
     }
 
     int samplesNeeded = std::numeric_limits<int>::max();
