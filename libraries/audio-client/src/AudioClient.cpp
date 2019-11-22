@@ -788,6 +788,9 @@ void AudioClient::start() {
         outputName = _hmdOutputName;
     }
 
+    //start the device right away to prevent starve
+    switchInputToAudioDevice(defaultAudioDeviceForMode(QAudio::AudioInput, inputName));
+    switchOutputToAudioDevice(defaultAudioDeviceForMode(QAudio::AudioOutput, outputName));
   
 #if defined(Q_OS_ANDROID)
     connect(&_checkInputTimer, &QTimer::timeout, this, &AudioClient::checkInputTimeout);
