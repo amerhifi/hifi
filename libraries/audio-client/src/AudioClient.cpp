@@ -2060,6 +2060,11 @@ bool AudioClient::switchOutputToAudioDevice(const HifiAudioDeviceInfo outputDevi
         << "-- outputDeviceInfo:" << outputDeviceInfo.deviceName() << ":" << outputDeviceInfo.getDevice().deviceName() << "]";
     bool supportedFormat = false;
 
+    if (prepareLocalInjectorsFuture.isStarted() || prepareLocalInjectorsFuture.isRunning()) {
+        qCDebug(audioclient) << __FUNCTION__ << "waiting on localinjects to finish before switching output";
+        prepareLocalInjectorsFuture.waitForFinished();
+    }
+
     // NOTE: device start() uses the Qt internal device list
     Lock lock(_deviceMutex);
 
@@ -2346,7 +2351,7 @@ qint64 AudioClient::AudioOutputIODevice::readData(char * data, qint64 maxSize) {
     }
 
     // prepare injectors for the next callback
-    QtConcurrent::run(QThreadPool::globalInstance(), [this] {
+   _audio->prepareLocalInjectorsFuture = QtConcurrent::run(QThreadPool::globalInstance(), [this] {
         _audio->prepareLocalAudioInjectors();
     });
 

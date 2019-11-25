@@ -18,6 +18,7 @@
 #include <mutex>
 #include <queue>
 
+#include <QFuture>
 #include <QtCore/QtGlobal>
 #include <QtCore/QByteArray>
 #include <QtCore/QElapsedTimer>
@@ -506,7 +507,7 @@ private:
 #endif
 
     AudioSolo _solo;
-
+    QFuture<void> prepareLocalInjectorsFuture;
     QReadWriteLock _hmdNameLock;
     Mutex _checkDevicesMutex;
     QTimer* _checkDevicesTimer { nullptr };
