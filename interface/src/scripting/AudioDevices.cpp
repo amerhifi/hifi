@@ -551,12 +551,11 @@ void AudioDevices::chooseInputDevice(const HifiAudioDeviceInfo& device, bool isH
 }
 
 void AudioDevices::chooseOutputDevice(const HifiAudioDeviceInfo& device, bool isHMD) {
-    qDebug() << __FUNCTION__ << QThread::currentThread()->objectName() << "-----------------------------------";
     //check if current context equals device to change
     if (_contextIsHMD == isHMD) {
         auto client = DependencyManager::get<AudioClient>().data();
         _requestedOutputDevice = device;
-        QMetaObject::invokeMethod(client, "switchAudioDevice",Qt::QueuedConnection,
+        QMetaObject::invokeMethod(client, "switchAudioDevice", Qt::QueuedConnection,
                                   Q_ARG(QAudio::Mode, QAudio::AudioOutput),
                                   Q_ARG(const HifiAudioDeviceInfo&, device));
     } else {
