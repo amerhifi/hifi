@@ -335,8 +335,8 @@ AudioClient::AudioClient() {
     connect(&_receivedAudioStream, &InboundAudioStream::mismatchedAudioCodec, this, &AudioClient::handleMismatchAudioFormat);
 
     // initialize wasapi; if getAvailableDevices is called from the CheckDevicesThread before this, it will crash
-    getAvailableDevices(QAudio::AudioInput, QString());
-    getAvailableDevices(QAudio::AudioOutput, QString());
+    defaultAudioDeviceName(QAudio::AudioInput);
+    defaultAudioDeviceName(QAudio::AudioOutput);
     
     // start a thread to detect any device changes
     _checkDevicesTimer = new QTimer(this);
@@ -768,7 +768,6 @@ int possibleResampling(AudioSRC* resampler,
 }
 
 void AudioClient::start() {
-
     // set up the desired audio format
     _desiredInputFormat.setSampleRate(AudioConstants::SAMPLE_RATE);
     _desiredInputFormat.setSampleSize(16);

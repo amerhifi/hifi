@@ -186,7 +186,7 @@ void AudioDeviceList::resetDevice(bool contextIsHMD) {
     QString deviceName = getTargetDevice(contextIsHMD, _mode);
     // FIXME can't use blocking connections here, so we can't determine whether the switch succeeded or not
     // We need to have the AudioClient emit signals on switch success / failure
-    QMetaObject::invokeMethod(client, "switchAudioDevice",
+    QMetaObject::invokeMethod(client, "switchAudioDevice", Qt::QueuedConnection,
         Q_ARG(QAudio::Mode, _mode), Q_ARG(QString, deviceName), Q_ARG(bool, contextIsHMD));
 
 #if 0
@@ -538,7 +538,7 @@ void AudioDevices::chooseInputDevice(const HifiAudioDeviceInfo& device, bool isH
     if (_contextIsHMD == isHMD) {
         auto client = DependencyManager::get<AudioClient>().data();
         _requestedInputDevice = device;
-        QMetaObject::invokeMethod(client, "switchAudioDevice",
+        QMetaObject::invokeMethod(client, "switchAudioDevice", Qt::QueuedConnection,
                                   Q_ARG(QAudio::Mode, QAudio::AudioInput),
                                   Q_ARG(const HifiAudioDeviceInfo&, device));
     } else {
@@ -551,11 +551,12 @@ void AudioDevices::chooseInputDevice(const HifiAudioDeviceInfo& device, bool isH
 }
 
 void AudioDevices::chooseOutputDevice(const HifiAudioDeviceInfo& device, bool isHMD) {
+    qDebug() << __FUNCTION__ << QThread::currentThread()->objectName() << "-----------------------------------";
     //check if current context equals device to change
     if (_contextIsHMD == isHMD) {
         auto client = DependencyManager::get<AudioClient>().data();
         _requestedOutputDevice = device;
-        QMetaObject::invokeMethod(client, "switchAudioDevice",
+        QMetaObject::invokeMethod(client, "switchAudioDevice",Qt::QueuedConnection,
                                   Q_ARG(QAudio::Mode, QAudio::AudioOutput),
                                   Q_ARG(const HifiAudioDeviceInfo&, device));
     } else {
