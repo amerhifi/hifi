@@ -2061,14 +2061,19 @@ bool AudioClient::switchOutputToAudioDevice(const HifiAudioDeviceInfo outputDevi
     bool supportedFormat = false;
 
     if (prepareLocalInjectorsFuture.isStarted() || prepareLocalInjectorsFuture.isRunning()) {
-        qCDebug(audioclient) << __FUNCTION__ << "waiting on localinjects to finish before switching output";
+        qCDebug(audioclient) << __FUNCTION__ << "waiting on localinjects to finish before switching output ---------------";
         prepareLocalInjectorsFuture.waitForFinished();
     }
 
+    qCDebug(audioclient) << __FUNCTION__ << "Obtaining device mutex ---------------";
     // NOTE: device start() uses the Qt internal device list
     Lock lock(_deviceMutex);
+    qCDebug(audioclient) << __FUNCTION__ << "Locked device mutex ---------------";
 
+    qCDebug(audioclient) << __FUNCTION__ << "Obtaining _localAudioMutex ---------------"; 
     Lock localAudioLock(_localAudioMutex);
+    qCDebug(audioclient) << __FUNCTION__ << "Locked Mutex: _localAudioMutex ---------------";
+
     _localSamplesAvailable.exchange(0, std::memory_order_release);
 
     // cleanup any previously initialized device
@@ -2295,7 +2300,7 @@ float AudioClient::gainForSource(float distance, float volume) {
 }
 
 qint64 AudioClient::AudioOutputIODevice::readData(char * data, qint64 maxSize) {
-
+    qCDebug(audioclient) << __FUNCTION__ << "read data started";
     // lock-free wait for initialization to avoid races
     if (!_audio->_audioOutputInitialized.load(std::memory_order_acquire)) {
         memset(data, 0, maxSize);
@@ -2352,7 +2357,9 @@ qint64 AudioClient::AudioOutputIODevice::readData(char * data, qint64 maxSize) {
 
     // prepare injectors for the next callback
    _audio->prepareLocalInjectorsFuture = QtConcurrent::run(QThreadPool::globalInstance(), [this] {
+       qCDebug(audioclient) << __FUNCTION__ << "Prepare local injectors started";
         _audio->prepareLocalAudioInjectors();
+        qCDebug(audioclient) << __FUNCTION__ << "Prepare local injectors ended";
     });
 
     int samplesPopped = std::max(networkSamplesPopped, injectorSamplesPopped);
@@ -2405,6 +2412,7 @@ qint64 AudioClient::AudioOutputIODevice::readData(char * data, qint64 maxSize) {
         _unfulfilledReads++;
     }
 
+    qCDebug(audioclient) << __FUNCTION__ << "read data ended";
     return bytesWritten;
 }
 
